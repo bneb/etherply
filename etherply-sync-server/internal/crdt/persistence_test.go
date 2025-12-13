@@ -11,13 +11,16 @@ import (
 
 func TestEngine_Persistence_Integration(t *testing.T) {
 	// 1. Setup
-	tmpFile := "test_engine_store.aof"
-	defer os.Remove(tmpFile)
+	tmpDir, err := os.MkdirTemp("", "crdt_persistence_test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpDir)
 
 	// 2. Initialize Store & Engine
-	ds, err := store.NewDiskStore(tmpFile)
+	ds, err := store.NewBadgerStore(tmpDir)
 	if err != nil {
-		t.Fatalf("Failed to create disk store: %v", err)
+		t.Fatalf("Failed to create badger store: %v", err)
 	}
 	engine := crdt.NewEngine(ds)
 
@@ -38,9 +41,9 @@ func TestEngine_Persistence_Integration(t *testing.T) {
 
 	// 5. Re-Open Store (Simulate Restart)
 	// We create a NEW Engine to ensure it reads from the store freshly
-	ds2, err := store.NewDiskStore(tmpFile)
+	ds2, err := store.NewBadgerStore(tmpDir)
 	if err != nil {
-		t.Fatalf("Failed to re-open disk store: %v", err)
+		t.Fatalf("Failed to re-open badger store: %v", err)
 	}
 	defer ds2.Close()
 	engine2 := crdt.NewEngine(ds2)

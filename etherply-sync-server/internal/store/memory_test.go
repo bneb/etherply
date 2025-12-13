@@ -17,7 +17,10 @@ func TestMemoryStore_SetGet(t *testing.T) {
 		t.Fatalf("Set failed: %v", err)
 	}
 
-	val, exists := ms.Get("workspace-1", "key1")
+	val, exists, err := ms.Get("workspace-1", "key1")
+	if err != nil {
+		t.Fatalf("Get failed: %v", err)
+	}
 	if !exists {
 		t.Error("Expected value to exist")
 	}
@@ -31,14 +34,20 @@ func TestMemoryStore_GetNonExistent(t *testing.T) {
 	defer ms.Close()
 
 	// Test: Get non-existent workspace
-	_, exists := ms.Get("non-existent", "key")
+	_, exists, err := ms.Get("non-existent", "key")
+	if err != nil {
+		t.Fatalf("Get failed: %v", err)
+	}
 	if exists {
 		t.Error("Expected value to not exist for non-existent workspace")
 	}
 
 	// Test: Get non-existent key in existing workspace
 	ms.Set("workspace-1", "key1", "value1")
-	_, exists = ms.Get("workspace-1", "non-existent-key")
+	_, exists, err = ms.Get("workspace-1", "non-existent-key")
+	if err != nil {
+		t.Fatalf("Get failed: %v", err)
+	}
 	if exists {
 		t.Error("Expected value to not exist for non-existent key")
 	}
@@ -84,7 +93,7 @@ func TestMemoryStore_GetAll_ReturnsCopy(t *testing.T) {
 	result["key"] = "modified"
 
 	// Original should be unchanged
-	val, _ := ms.Get("ws", "key")
+	val, _, _ := ms.Get("ws", "key")
 	if val != "original" {
 		t.Error("GetAll should return a copy, not a reference to internal data")
 	}
@@ -97,7 +106,7 @@ func TestMemoryStore_Overwrite(t *testing.T) {
 	ms.Set("ws", "key", "first")
 	ms.Set("ws", "key", "second")
 
-	val, _ := ms.Get("ws", "key")
+	val, _, _ := ms.Get("ws", "key")
 	if val != "second" {
 		t.Errorf("Expected 'second' after overwrite, got %v", val)
 	}
@@ -110,8 +119,8 @@ func TestMemoryStore_MultipleWorkspaces(t *testing.T) {
 	ms.Set("ws-a", "key", "value-a")
 	ms.Set("ws-b", "key", "value-b")
 
-	valA, _ := ms.Get("ws-a", "key")
-	valB, _ := ms.Get("ws-b", "key")
+	valA, _, _ := ms.Get("ws-a", "key")
+	valB, _, _ := ms.Get("ws-b", "key")
 
 	if valA != "value-a" {
 		t.Errorf("Expected 'value-a', got %v", valA)
@@ -139,7 +148,7 @@ func TestMemoryStore_Concurrency(t *testing.T) {
 	wg.Wait()
 
 	// Just verify we don't panic - exact value doesn't matter due to races
-	_, exists := ms.Get("ws", "key")
+	_, exists, _ := ms.Get("ws", "key")
 	if !exists {
 		t.Error("Expected key to exist after concurrent writes")
 	}

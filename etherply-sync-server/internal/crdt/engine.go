@@ -36,11 +36,11 @@ type Operation struct {
 }
 
 type Engine struct {
-	store  store.StateStore
+	store  store.Store
 	logger *slog.Logger
 }
 
-func NewEngine(s store.StateStore) *Engine {
+func NewEngine(s store.Store) *Engine {
 	// Default to JSON handler for structured output, writing to stderr
 	logger := slog.New(slog.NewJSONHandler(os.Stderr, nil))
 	return &Engine{
@@ -72,7 +72,11 @@ func (e *Engine) ProcessOperation(op Operation) error {
 
 	// 1. LWW Conflict Resolution (Per PRD-001 Story 3)
 	// We must fetch the current state to compare timestamps.
-	currentVal, exists := e.store.Get(op.WorkspaceID, op.Key)
+	currentVal, exists, err := e.store.Get(op.WorkspaceID, op.Key)
+	if err != nil {
+		return fmt.Errorf("failed to fetch current state: %w", err)
+	}
+
 	if exists {
 		// Attempt to type assert to Operation
 		if currentOp, ok := currentVal.(Operation); ok {
@@ -106,7 +110,7 @@ func (e *Engine) ProcessOperation(op Operation) error {
 		}
 	}
 
-	err := e.store.Set(op.WorkspaceID, op.Key, op)
+	err = e.store.Set(op.WorkspaceID, op.Key, op)
 	if err != nil {
 		return err
 	}

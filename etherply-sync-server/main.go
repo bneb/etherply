@@ -42,10 +42,10 @@ func main() {
 	}
 	auth.Init(jwtSecret)
 
-	// Initialize Store (Persistent DiskStore for MVP Durability)
-	// We use a local file "etherply.aof". In production, this path comes from env.
+	// Initialize Store (BadgerDB v4 for Production-Grade Persistence)
+	// We use a local directory "badger.db". In production, this path comes from env.
 	// Ideally this should be on a mounted volume.
-	stateStore, err := store.NewDiskStore("etherply.aof")
+	stateStore, err := store.NewBadgerStore("badger.db")
 	if err != nil {
 		log.Fatalf("Failed to initialize persistence layer: %v", err)
 	}

@@ -4,30 +4,6 @@ import (
 	"sync"
 )
 
-// StateStore defines the persistence contract for workspace state storage.
-// Implementations must be thread-safe as they may be accessed concurrently.
-//
-// For MVP, this is implemented with an in-memory map (MemoryStore) or
-// an Append-Only File (DiskStore). In production, this interface would
-// be implemented by FoundationDB or CockroachDB adapters.
-type StateStore interface {
-	// Get retrieves a single value by workspace and key.
-	// Returns (nil, false) if the key doesn't exist.
-	Get(workspaceID string, key string) (interface{}, bool)
-
-	// Set stores a value for the given workspace and key.
-	// For persistent stores, this should also write to durable storage.
-	Set(workspaceID string, key string, value interface{}) error
-
-	// GetAll returns all key-value pairs for a workspace.
-	// Returns an empty map (not nil) if the workspace has no data.
-	GetAll(workspaceID string) (map[string]interface{}, error)
-
-	// Close releases any resources held by the store (file handles, connections).
-	// After Close is called, the store should not be used.
-	Close() error
-}
-
 type MemoryStore struct {
 	mu   sync.RWMutex
 	data map[string]map[string]interface{} // workspaceID -> key -> value
@@ -39,16 +15,16 @@ func NewMemoryStore() *MemoryStore {
 	}
 }
 
-func (s *MemoryStore) Get(workspaceID string, key string) (interface{}, bool) {
+func (s *MemoryStore) Get(workspaceID string, key string) (interface{}, bool, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	workspace, ok := s.data[workspaceID]
 	if !ok {
-		return nil, false
+		return nil, false, nil
 	}
 	val, ok := workspace[key]
-	return val, ok
+	return val, ok, nil
 }
 
 func (s *MemoryStore) Set(workspaceID string, key string, value interface{}) error {
@@ -87,3 +63,6 @@ func (s *MemoryStore) GetAll(workspaceID string) (map[string]interface{}, error)
 func (s *MemoryStore) Close() error {
 	return nil
 }
+
+// Ensure interface satisfaction
+var _ Store = (*MemoryStore)(nil)

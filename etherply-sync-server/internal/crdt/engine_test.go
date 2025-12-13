@@ -9,7 +9,7 @@ import (
 )
 
 // setupMockEngine creates an engine backed by a fresh MemoryStore
-func setupMockEngine() (*crdt.Engine, store.StateStore) {
+func setupMockEngine() (*crdt.Engine, store.Store) {
 	ms := store.NewMemoryStore()
 	// In a real test, we might want to capture logs, but for now default to stderr or discard
 	// To test defensive logging, one would typically use a custom slog.Handler,
@@ -38,7 +38,7 @@ func TestLWW_Correctness(t *testing.T) {
 	}
 
 	// Verify state
-	val, _ := ms.Get(workspaceID, key)
+	val, _, _ := ms.Get(workspaceID, key)
 	storedOp := val.(crdt.Operation)
 	if storedOp.Timestamp != 1000 {
 		t.Errorf("Expected timestamp 1000, got %d", storedOp.Timestamp)
@@ -55,7 +55,7 @@ func TestLWW_Correctness(t *testing.T) {
 		t.Fatalf("Failed to process newer op: %v", err)
 	}
 
-	val, _ = ms.Get(workspaceID, key)
+	val, _, _ = ms.Get(workspaceID, key)
 	storedOp = val.(crdt.Operation)
 	if storedOp.Timestamp != 2000 {
 		t.Errorf("Expected timestamp 2000 (winner), got %d", storedOp.Timestamp)
@@ -90,7 +90,7 @@ func TestLWW_StaleOperation(t *testing.T) {
 	}
 
 	// Verify state is UNCHANGED
-	val, _ := ms.Get(workspaceID, key)
+	val, _, _ := ms.Get(workspaceID, key)
 	storedOp := val.(crdt.Operation)
 	if storedOp.Value != "latest" {
 		t.Errorf("LWW Violation: Expected 'latest', got '%v'", storedOp.Value)
@@ -116,7 +116,7 @@ func TestClockSkew_FutureTimestamp(t *testing.T) {
 		t.Fatalf("Engine rejected future timestamp: %v", err)
 	}
 
-	val, exists := ms.Get("ws-skew", "key")
+	val, exists, _ := ms.Get("ws-skew", "key")
 	if !exists {
 		t.Error("Expected future op to be persisted")
 	}
@@ -151,7 +151,7 @@ func TestDataCorruption_SelfHealing(t *testing.T) {
 		t.Fatalf("Engine failed to recover from corruption: %v", err)
 	}
 
-	val, _ := ms.Get(workspaceID, key)
+	val, _, _ := ms.Get(workspaceID, key)
 	// Should now be a valid Operation
 	if storedOp, ok := val.(crdt.Operation); !ok {
 		t.Error("Failed to self-heal: value is still not an Operation")
