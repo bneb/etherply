@@ -10,7 +10,7 @@ This monorepo contains the following components:
 |Dist|---|---|
 | [`etherply-sync-server/`](./etherply-sync-server) | **Core Engine** | Go-based WebSocket server with CRDT logic and Disk persistence. |
 | [`pkg/go-sdk/`](./pkg/go-sdk) | **Client SDK** | Go client library for connecting to the engine. |
-| [`docs/demo/`](./docs/demo) | **Demo App** | Next.js 14 "Magic Moment" collaborative editor demo. |
+| [`examples/demo/`](./examples/demo) | **Demo App** | Next.js 14 "Magic Moment" collaborative editor demo. |
 | [`docs/`](./docs) | **Documentation** | Guides, API Reference, and Strategic Analysis. |
 
 ## Quick Start (Run the Full Stack)
@@ -26,7 +26,7 @@ go run main.go
 ### 2. Start the Frontend Demo
 In a new terminal:
 ```bash
-cd docs/demo
+cd examples/demo
 npm install
 npm run dev
 ```
