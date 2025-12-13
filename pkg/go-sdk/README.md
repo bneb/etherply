@@ -41,3 +41,15 @@ func main() {
 - Use `NewClient` to configure.
 - `Connect` performs the WebSocket handshake.
 - `Listen` spawns a goroutine to read messages.
+- `Close` gracefully terminates the connection (sends WebSocket close frame).
+
+## Example with Cleanup
+```go
+client := etherply.NewClient("ws://localhost:8080", "my-token")
+if err := client.Connect("workspace-1"); err != nil {
+    log.Fatal(err)
+}
+defer client.Close() // Always cleanup
+
+// ... use client
+```

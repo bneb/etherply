@@ -56,3 +56,18 @@ func (c *Client) Listen(handler func(msg map[string]interface{})) {
 		}
 	}()
 }
+
+// Close terminates the WebSocket connection gracefully.
+// It sends a close message to the server and closes the underlying connection.
+func (c *Client) Close() error {
+	if c.Conn == nil {
+		return nil
+	}
+	// Send close message per WebSocket protocol
+	err := c.Conn.WriteMessage(websocket.CloseMessage,
+		websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+	if err != nil {
+		log.Printf("[SDK] Error sending close message: %v", err)
+	}
+	return c.Conn.Close()
+}

@@ -9,7 +9,7 @@ To eliminate the "diffusion of responsibility." Every component has a Direct Res
 |---|---|---|---|
 | **Sync Engine** | `etherply-sync-server/` | **Kevin (Founder)** | 🔴 **CRITICAL** (Solo) |
 | **SDK** | `pkg/go-sdk/` | Kevin | 🔴 High |
-| **Frontend/Demo** | `docs/demo/` | Kevin | 🟡 Medium |
+| **Frontend/Demo** | `examples/demo/` | Kevin | 🟡 Medium |
 | **Documentation** | `docs/` | Kevin | 🟢 Low |
 
 ## Escalation Protocols

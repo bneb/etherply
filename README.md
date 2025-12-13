@@ -7,7 +7,7 @@ EtherPly is a managed state synchronization engine that turns static apps into c
 This monorepo contains the following components:
 
 | Directory | Component | Description |
-|Dist|---|---|
+|---|---|---|
 | [`etherply-sync-server/`](./etherply-sync-server) | **Core Engine** | Go-based WebSocket server with CRDT logic and Disk persistence. |
 | [`pkg/go-sdk/`](./pkg/go-sdk) | **Client SDK** | Go client library for connecting to the engine. |
 | [`examples/demo/`](./examples/demo) | **Demo App** | Next.js 14 "Magic Moment" collaborative editor demo. |
@@ -33,11 +33,11 @@ npm run dev
 *Open http://localhost:3000 in two browser windows.*
 
 ## Documentation Index
-- [Implementation Plan](docs/implementation_plan.md) (Artifact)
-- [User Stories](docs/design/user_stories.md) (Artifact)
-- [Design System](docs/design/design_system.md) (Artifact)
-- [Commercial Due Diligence](docs/commercial_due_diligence.md) (Artifact)
-- [Technical Debt Alert](docs/tech_debt.md)
+- [API Reference](docs/api_reference.md) - WebSocket and REST API documentation
+- [Integration Guide](docs/integrate.md) - 5-minute quickstart for developers
+- [Commercial Due Diligence](docs/commercial_due_diligence.md) - Investment readiness assessment
+- [Technical Debt Alert](docs/tech_debt.md) - Known limitations and remediation plan
+- [Quality Audit](docs/QUALITY_AUDIT.md) - Frontend code quality analysis
 
 ## Status
 - **Metric:** Weekly Active Teams (WATs)

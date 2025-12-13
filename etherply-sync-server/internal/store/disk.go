@@ -14,11 +14,10 @@ import (
 // This is a naive implementation for MVP persistence without external dependencies.
 // In production, this would be FoundationDB or CockroachDB.
 type DiskStore struct {
-	mu           sync.RWMutex
-	data         map[string]map[string]interface{}
-	aofFile      *os.File
-	encoder      *gob.Encoder
-	syncInterval time.Duration
+	mu      sync.RWMutex
+	data    map[string]map[string]interface{}
+	aofFile *os.File
+	encoder *gob.Encoder
 }
 
 // OpLogEntry represents a single mutation logged to disk.
