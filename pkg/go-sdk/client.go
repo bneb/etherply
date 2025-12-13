@@ -3,6 +3,7 @@ package etherply
 import (
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -20,6 +21,7 @@ type Client struct {
 	BaseURL string
 	Token   string
 	Conn    *websocket.Conn
+	mu      sync.Mutex // Guards writes to Conn
 }
 
 // NewClient creates a new Client instance.
@@ -57,6 +59,9 @@ func (c *Client) Connect(workspaceID string) error {
 // Returns an error if the connection has not been established via Connect().
 // Note: This does not guarantee the server *accepted* the write, only that it was written to the socket.
 func (c *Client) SendOperation(key string, value interface{}) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	// Defensive: Check connection before attempting to write.
 	// "The Happy Path is a Trap" - we must handle the not-connected case gracefully.
 	if c.Conn == nil {
@@ -71,11 +76,7 @@ func (c *Client) SendOperation(key string, value interface{}) error {
 			"timestamp": time.Now().UnixMicro(),
 		},
 	}
-	// WriteJSON is thread-safe effectively because we don't interleave partial messages,
-	// but strictly speaking, Gorilla WebSocket WriteJSON is NOT concurrent safe.
-	// If this SDK were to be used heavily concurrently, we would need a mutex here.
-	// For this MVP, we assume single-threaded writing or low contention.
-	// TODO: Add Mutex for robust thread safety if multiple goroutines write simultaneously.
+	
 	return c.Conn.WriteJSON(msg)
 }
 
@@ -110,6 +111,9 @@ func (c *Client) Listen(handler func(msg map[string]interface{})) {
 // Close terminates the WebSocket connection gracefully.
 // It sends a close message to the server and closes the underlying connection.
 func (c *Client) Close() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if c.Conn == nil {
 		return nil
 	}
@@ -121,3 +125,4 @@ func (c *Client) Close() error {
 	}
 	return c.Conn.Close()
 }
+
