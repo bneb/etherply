@@ -8,8 +8,9 @@ package server
 
 import (
 	"encoding/json"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 
@@ -29,15 +30,19 @@ var upgrader = websocket.Upgrader{
 type Handler struct {
 	crdtEngine      *crdt.Engine
 	presenceManager *presence.Manager
+	logger          *slog.Logger
 	// Simple Hub for broadcasting (basic implementation)
 	hubMu sync.Mutex
 	hub   map[string]map[*websocket.Conn]bool // workspaceID -> conns
 }
 
 func NewHandler(e *crdt.Engine, p *presence.Manager) *Handler {
+	// Default to JSON handler for structured output, writing to stderr
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, nil))
 	return &Handler{
 		crdtEngine:      e,
 		presenceManager: p,
+		logger:          logger,
 		hub:             make(map[string]map[*websocket.Conn]bool),
 	}
 }
@@ -73,15 +78,19 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("[WS] Upgrade error: %v", err)
+		h.logger.Error("ws_upgrade_failed", slog.Any("error", err))
 		return
 	}
 
 	// Register Connection
 	h.registerConnection(workspaceID, conn)
-	h.presenceManager.AddUser(workspaceID, presence.User{UserID: userID, Status: "online"})
+	h.presenceManager.AddUser(workspaceID, presence.User{UserID: userID, Status: presence.StatusOnline})
 	
-	log.Printf("[METRIC] concurrent_connection_peak | workspace=%s user_tier=FREE", workspaceID)
+	h.logger.Info("concurrent_connection_peak",
+		slog.String("event", "metric"),
+		slog.String("workspace_id", workspaceID),
+		slog.String("user_tier", "FREE"),
+	)
 
 	defer func() {
 		h.unregisterConnection(workspaceID, conn)
@@ -122,7 +131,7 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 			op.WorkspaceID = workspaceID // Force security
 			err := h.crdtEngine.ProcessOperation(op)
 			if err != nil {
-				log.Printf("Error processing op: %v", err)
+				h.logger.Error("op_processing_failed", slog.Any("error", err))
 				continue
 			}
 
@@ -162,7 +171,7 @@ func (h *Handler) broadcast(workspaceID string, msg interface{}, sender *websock
 				// For simple CRDTs we might echo back to confirm, but typically we don't for bandwidth.
 				err := client.WriteJSON(msg)
 				if err != nil {
-					log.Printf("Broadcast error: %v", err)
+					h.logger.Error("broadcast_failed", slog.Any("error", err))
 					client.Close()
 					delete(clients, client)
 				}

@@ -11,6 +11,14 @@ import (
 	"sync"
 )
 
+
+const (
+	StatusOnline  = "online"
+	StatusIdle    = "idle"
+	StatusOffline = "offline"
+	StatusUnknown = "unknown"
+)
+
 type User struct {
 	UserID string `json:"user_id"`
 	Status string `json:"status"` // e.g., "online", "idle"
@@ -30,6 +38,14 @@ func NewManager() *Manager {
 func (m *Manager) AddUser(workspaceID string, user User) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+
+	// Defensive Coding: Enforce known status
+	switch user.Status {
+	case StatusOnline, StatusIdle, StatusOffline:
+		// valid
+	default:
+		user.Status = StatusUnknown
+	}
 
 	if _, ok := m.workspaces[workspaceID]; !ok {
 		m.workspaces[workspaceID] = make(map[string]User)

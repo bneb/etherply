@@ -11,10 +11,12 @@
 // collaborative text editing or OR-Set for collection operations.
 package crdt
 
+
 import (
 	"encoding/gob"
 	"fmt"
-	"log"
+	"log/slog"
+	"os"
 	"time"
 
 	"github.com/bneb/etherply/etherply-sync-server/internal/store"
@@ -34,39 +36,34 @@ type Operation struct {
 }
 
 type Engine struct {
-	store store.StateStore
+	store  store.StateStore
+	logger *slog.Logger
 }
 
 func NewEngine(s store.StateStore) *Engine {
+	// Default to JSON handler for structured output, writing to stderr
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, nil))
 	return &Engine{
-		store: s,
+		store:  s,
+		logger: logger,
 	}
 }
 
 // PrepareMetricData is a helper to track operation metrics (PostHog stub)
 func (e *Engine) fireSyncOperationMetric(op Operation, latencyMs int64) {
-	// In a real implementation, this would send an event to PostHog.
 	// Metric: sync_operation_count
-	// Properties: data_bytes_transferred (approx), workspace_id, latency_ms
-	log.Printf("[METRIC] sync_operation_count | workspace=%s latency=%dms", op.WorkspaceID, latencyMs)
+	e.logger.Info("sync_metric",
+		slog.String("event", "sync_operation_count"),
+		slog.String("workspace_id", op.WorkspaceID),
+		slog.Int64("latency_ms", latencyMs),
+		slog.Int("bytes_approx", len(fmt.Sprintf("%v", op.Value))), // Rough approximation
+	)
 }
 
 // ProcessOperation handles an incoming CRDT operation.
 // It implements LWW (Last-Write-Wins) conflict resolution.
 func (e *Engine) ProcessOperation(op Operation) error {
 	start := time.Now()
-
-	// 1. Fetch current state to check timestamp (LWW check)
-	// In a real LWW Register, we store (Value, Timestamp).
-	// Here for simplicity of the "in-memory map" MVP, we might just overwrite.
-	// To do LWW correctly, the Store needs to store the timestamp too.
-	// For this MVP step 1, we will trust the client simply sends new data.
-	// But let's add a basic check if we were using a structured object.
-
-	// For the demo "Magic Moment", we just blindly accept the latest arrival if we assume consistent clocks
-	// or if we just want to show propagation.
-	// However, the mandate says "CRDT-based state synchronization".
-	// So let's just save valid operations.
 
 	// 0. Strict Validation (Anti-Fuzzing / Defensive Coding)
 	if op.WorkspaceID == "" || op.Key == "" {
@@ -80,22 +77,32 @@ func (e *Engine) ProcessOperation(op Operation) error {
 		// Attempt to type assert to Operation
 		if currentOp, ok := currentVal.(Operation); ok {
 			// Clock Skew Protection: Reject timestamps significantly in the future?
-			// For MVP, we'll just log if it's > 1 minute ahead.
 			if op.Timestamp > time.Now().Add(1*time.Minute).UnixMicro() {
-				log.Printf("[LWW] Warning: received future timestamp for key=%s (ts=%d)", op.Key, op.Timestamp)
+				e.logger.Warn("clock_skew_detected",
+					slog.String("key", op.Key),
+					slog.Int64("op_ts", op.Timestamp),
+					slog.Int64("server_ts", time.Now().UnixMicro()),
+				)
 			}
 
 			if op.Timestamp <= currentOp.Timestamp {
 				// Incoming op is older or equal. LWW rule: discard.
-				// We do not return error, as this is valid eventual consistency convergence.
-				log.Printf("[LWW] Discarding stale op for key=%s (newTs=%d, currTs=%d)", op.Key, op.Timestamp, currentOp.Timestamp)
+				e.logger.Info("discarding_stale_op",
+					slog.String("key", op.Key),
+					slog.Int64("new_ts", op.Timestamp),
+					slog.Int64("curr_ts", currentOp.Timestamp),
+				)
 				return nil
 			}
 		} else {
 			// CRITICAL: Type Assertion Failed.
 			// This implies data corruption or schema drift.
 			// We choose to OVERWRITE (Self-Heal) but we must log strictly.
-			log.Printf("[CRITICAL] State Corruption Detected: Could not assert current value type for key=%s. Overwriting to self-heal.", op.Key)
+			e.logger.Error("state_corruption_detected",
+				slog.String("key", op.Key),
+				slog.String("error", "could not assert current value type"),
+				slog.String("action", "overwriting_to_self_heal"),
+			)
 		}
 	}
 
