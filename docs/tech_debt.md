@@ -9,20 +9,22 @@
 - **[HIGH]** Significant operational risk. Remediation required before V1.0.
 - **[MEDIUM]** Maintenance burden. Plan for Q3.
 
-## 1. Persistence Layer: The "Toy Database" [CRITICAL]
-*Location:* `internal/store/disk.go`
+## 1. Persistence Layer: The "Toy Database" [RESOLVED]
+*Location:* `internal/store/badger.go`
 
-**The Failure:**
-The current implementation is a naive Append-Only File (AOF) that loads **ALL** data into RAM on startup.
-- **O(N) Startup Time:** Startup time scales linearly with history size.
-- **O(N) Memory Usage:** RAM usage is proportional to total data ever written.
-- **Single Point of Failure:** File corruption results in total data loss.
-- **Global Write Lock:** `s.mu.Lock()` prevents concurrent writes, capping throughput to single-disk IOPS.
+**Resolution (Q1 2026):**
+Replaced naive AOF with **BadgerDB v4**.
+- **Scalability:** LSM-tree based storage handles terabytes of data.
+- **Concurrency:** Thread-safe concurrent reads/writes.
+- **Durability:** Standard BadgerDB durability guarantees.
+
+*Legacy Context:*
+The previous system used `internal/store/disk.go` which loaded all data into RAM. This was removed in "Operation Ironclad".
 
 **Remediation Plan:**
-- [ ] **DELETE** `internal/store/disk.go`.
-- [ ] Implement `Store` interface using an embedded LSM-tree (BadgerDB/Pebble) or external DB (Postgres/Redis).
-- [ ] Adopt **Write-Ahead Logging (WAL)** pattern for durability without blocking.
+- [x] **DELETE** `internal/store/disk.go`.
+- [x] Implement `Store` interface using embedded LSM-tree (BadgerDB).
+- [x] Adopt **Write-Ahead Logging (WAL)** pattern (Internal to BadgerDB).
 
 ## 2. Synchronization Engine: LWW "Data Loss" [CRITICAL]
 *Location:* `internal/crdt/engine.go`
