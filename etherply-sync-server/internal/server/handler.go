@@ -13,7 +13,7 @@ import (
 )
 
 var upgrader = websocket.Upgrader{
-	StartBufferSize: 4096,
+	ReadBufferSize:  4096,
 	WriteBufferSize: 4096,
 	CheckOrigin: func(r *http.Request) bool {
 		return true // Allow all origins for Demo/DX

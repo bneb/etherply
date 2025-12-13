@@ -1,6 +1,7 @@
 package crdt
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -51,14 +52,23 @@ func (e *Engine) ProcessOperation(op Operation) error {
 	// However, the mandate says "CRDT-based state synchronization".
 	// So let's just save valid operations.
 
+	// 0. Strict Validation (Anti-Fuzzing / Defensive Coding)
+	if op.WorkspaceID == "" || op.Key == "" {
+		return fmt.Errorf("invalid operation: workspace_id and key are required")
+	}
+
 	// 1. LWW Conflict Resolution (Per PRD-001 Story 3)
 	// We must fetch the current state to compare timestamps.
 	currentVal, exists := e.store.Get(op.WorkspaceID, op.Key)
 	if exists {
 		// Attempt to type assert to Operation
-		// Note: robust code would handle map[string]interface{} if coming from JSON unmarshal in some stores,
-		// but here we use Go structs in memory/gob.
 		if currentOp, ok := currentVal.(Operation); ok {
+			// Clock Skew Protection: Reject timestamps significantly in the future?
+			// For MVP, we'll just log if it's > 1 minute ahead.
+			if op.Timestamp > time.Now().Add(1*time.Minute).UnixMicro() {
+				log.Printf("[LWW] Warning: received future timestamp for key=%s (ts=%d)", op.Key, op.Timestamp)
+			}
+
 			if op.Timestamp <= currentOp.Timestamp {
 				// Incoming op is older or equal. LWW rule: discard.
 				// We do not return error, as this is valid eventual consistency convergence.
@@ -66,9 +76,10 @@ func (e *Engine) ProcessOperation(op Operation) error {
 				return nil
 			}
 		} else {
-			// Fallback: If we can't assert type (e.g. legacy data or type drift),
-			// we log warning and overwrite to self-heal.
-			log.Printf("[LWW] Warning: Could not assert current value type for key=%s. Overwriting.", op.Key)
+			// CRITICAL: Type Assertion Failed.
+			// This implies data corruption or schema drift.
+			// We choose to OVERWRITE (Self-Heal) but we must log strictly.
+			log.Printf("[CRITICAL] State Corruption Detected: Could not assert current value type for key=%s. Overwriting to self-heal.", op.Key)
 		}
 	}
 

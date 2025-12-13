@@ -24,27 +24,38 @@ func Middleware(next http.Handler) http.Handler {
 		// but usually we pass token in query param or header.
 		// For MVP simplicuty, let's just log it.
 
+		// Strict Auth: We demand a Bearer token.
 		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			// Check query param for WebSockets (common pattern)
-			token := r.URL.Query().Get("token")
-			if token == "" {
-				// Stub: allow unauthenticated for the very first step of local demo if needed,
-				// but mandate says "Middleware (placeholder) that validates...".
-				// We'll Log warning but proceed for maximum DX in local demo,
-				// or fail if we want to be strict.
-				// Let's be strict but give a default token in the client.
-				// w.WriteHeader(http.StatusUnauthorized)
-				// return
-				log.Println("[AUTH] No token provided (Stub: Allowing for MVP Demo convenience)")
-			}
-		} else {
-			tokenParts := strings.Split(authHeader, " ")
-			if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
-				// log.Println("[AUTH] Invalid token format")
+		
+		// 1. Check Header
+		var token string
+		if authHeader != "" {
+			parts := strings.SplitN(authHeader, " ", 2)
+			if len(parts) == 2 && parts[0] == "Bearer" {
+				token = parts[1]
 			}
 		}
 
+		// 2. Fallback: Check Query Param (common for WebSockets)
+		if token == "" {
+			token = r.URL.Query().Get("token")
+		}
+
+		// 3. Validation
+		if token == "" {
+			// STRICT MODE: No token = 401. No more "Demo Convenience".
+			log.Println("[AUTH] Rejected request: Missing Authorization token.")
+			http.Error(w, "Unauthorized: Bearer token required", http.StatusUnauthorized)
+			return
+		}
+
+		if err := ValidateToken(token); err != nil {
+			log.Printf("[AUTH] Rejected request: Invalid token (%v)", err)
+			http.Error(w, "Unauthorized: Invalid token", http.StatusUnauthorized)
+			return
+		}
+
+		// Pass execution to the next handler
 		next.ServeHTTP(w, r)
 	})
 }

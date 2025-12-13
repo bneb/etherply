@@ -6,6 +6,7 @@ export type User = {
 export type EtherPlyConfig = {
     workspaceId: string;
     userId: string;
+    token?: string;
 }
 
 export type ConnectionStatus = 'IDLE' | 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'ERROR';
@@ -31,7 +32,8 @@ export class EtherPlyClient {
 
         this.setStatus('CONNECTING');
         // Connect to local server for demo
-        this.ws = new WebSocket(`ws://localhost:8080/v1/sync/${this.config.workspaceId}?userId=${this.config.userId}`);
+        const token = this.config.token || "demo-token-123";
+        this.ws = new WebSocket(`ws://localhost:8080/v1/sync/${this.config.workspaceId}?userId=${this.config.userId}&token=${token}`);
 
         this.ws.onopen = () => {
             console.log("Connected to EtherPly");
