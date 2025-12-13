@@ -1,8 +1,8 @@
 # EtherPly Go Client SDK
 
 ## Overview
-A lightweight, idiomatic Go library for connecting to the EtherPly Sync Engine.
-Designed for backend-to-backend synchronization or building custom Go-based clients (e.g., CLI tools, bots).
+A lightweight, idiomatic Go library for connecting to the EtherPly Sync Engine via WebSockets.
+Designed for backend-to-backend synchronization (e.g., seeding data) or building custom Go-based clients (e.g., CLI tools, bots).
 
 ## Installation
 ```bash
@@ -20,36 +20,45 @@ import (
 
 func main() {
     // 1. Initialize
-    client := etherply.NewClient("ws://localhost:8080", "my-token")
+    // Tip: In production, fetch tokens from your auth provider, do not hardcode.
+    client := etherply.NewClient("ws://localhost:8080", "valid-jwt-token")
 
     // 2. Connect
+    // This performs the WebSocket handshake and authenticates.
     if err := client.Connect("my-workspace"); err != nil {
         log.Fatalf("Failed to connect: %v", err)
     }
+    defer client.Close()
 
-    // 3. Listen
+    // 3. Listen (Non-blocking)
     client.Listen(func(msg map[string]interface{}) {
         log.Printf("Received: %v", msg)
     })
 
-    // 4. Send
-    client.SendOperation("greeting", "Hello EtherPly")
+    // 4. Send Operation
+    // Operations are LWW (Last-Write-Wins). The SDK automatically attaches a microsecond timestamp.
+    if err := client.SendOperation("greeting", "Hello EtherPly"); err != nil {
+         log.Printf("Send failed: %v", err)
+    }
+    
+    // Keep main thread alive
+    select {}
 }
 ```
+
+## Architecture & Thread Safety
+
+### Concurrency Model
+- **`SendOperation`**: Thread-safe. You can call this from multiple goroutines.
+- **`Listen`**: Runs on its own goroutine. The callback is executed sequentially for each incoming message.
+- **`Close`**: Thread-safe.
+
+### Error Handling
+The SDK follows Go idioms. Errors are returned explicitly.
+- If `Connect()` fails, the client is unusable.
+- If `SendOperation()` fails, it typically means the connection dropped. The current SDK version does **not** automatically reconnect (see [Roadmap](../docs/tech_debt.md)).
 
 ## Internals
-- Use `NewClient` to configure.
-- `Connect` performs the WebSocket handshake.
-- `Listen` spawns a goroutine to read messages.
-- `Close` gracefully terminates the connection (sends WebSocket close frame).
-
-## Example with Cleanup
-```go
-client := etherply.NewClient("ws://localhost:8080", "my-token")
-if err := client.Connect("workspace-1"); err != nil {
-    log.Fatal(err)
-}
-defer client.Close() // Always cleanup
-
-// ... use client
-```
+- **Protocol**: Uses `gorilla/websocket`.
+- **Serialization**: JSON.
+- **Timestamps**: Uses `time.Now().UnixMicro()` for CRDT conflict resolution.

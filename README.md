@@ -15,10 +15,16 @@ This monorepo contains the following components:
 
 ## Quick Start (Run the Full Stack)
 
+### Prerequisites
+- **Go 1.20+**: Verify with `go version`
+- **Node.js 18+**: Verify with `node -v`
+
 ### 1. Start the Backend
 ```bash
 cd etherply-sync-server
 go mod tidy
+# 2 AM Check: Ensure port 8080 is free before running
+# lsof -i :8080 
 go run main.go
 ```
 *Wait for output: "EtherPly Sync Server starting on port 8080"*
@@ -33,11 +39,12 @@ npm run dev
 *Open http://localhost:3000 in two browser windows.*
 
 ## Documentation Index
-- [API Reference](docs/api_reference.md) - WebSocket and REST API documentation
-- [Integration Guide](docs/integrate.md) - 5-minute quickstart for developers
-- [Commercial Due Diligence](docs/commercial_due_diligence.md) - Investment readiness assessment
-- [Technical Debt Alert](docs/tech_debt.md) - Known limitations and remediation plan
-- [Quality Audit](docs/QUALITY_AUDIT.md) - Frontend code quality analysis
+- [Architecture Overview](docs/architecture.md) - System design and data flow diagrams.
+- [API Reference](docs/api_reference.md) - WebSocket protocol and REST endpoints.
+- [Integration Guide](docs/integrate.md) - 5-minute quickstart.
+- [Commercial Due Diligence](docs/commercial_due_diligence.md) - Investment analysis.
+- [Technical Debt Alert](docs/tech_debt.md) - Known limitations.
+- [Quality Audit](docs/QUALITY_AUDIT.md) - Frontend analysis.
 
 ## Status
 - **Metric:** Weekly Active Teams (WATs)
