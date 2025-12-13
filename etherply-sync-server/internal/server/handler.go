@@ -1,3 +1,9 @@
+// Package server provides HTTP and WebSocket handlers for the EtherPly sync engine.
+// It orchestrates connections between clients and the CRDT engine, handling:
+//   - WebSocket upgrade and lifecycle management
+//   - Message routing (operations broadcast to workspace members)
+//   - Presence tracking integration
+//   - Initial state synchronization for new connections
 package server
 
 import (

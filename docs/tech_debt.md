@@ -4,7 +4,10 @@
 > COMPLIANCE: REQUIRED OUTPUT FOR SERIES A TECHNICAL DUE DILIGENCE.
 
 ## Current State
-The current MVP uses an In-Memory `map[string]interface{}` for the StateStore. This allows for extremely low latency (< 2ms) but provides **Zero Durability**. If the server pod restarts, all workspace state is lost.
+The current MVP uses `store.DiskStore` with Append-Only File (AOF) persistence via `gob` encoding. This provides **MVP Durability** - data survives server restarts. However, for production scale, this single-file approach has limitations:
+- Single-node bottleneck (no horizontal scaling)
+- No transaction isolation between workspaces
+- Recovery time increases with log size
 
 ## Critical Refactoring Steps (Next 3 Sprints)
 

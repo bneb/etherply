@@ -86,3 +86,23 @@ Feature: Collaborative Editing Robustness
     Then the editor should remain visible above the fold
     And the "Is Connecting" overlay should not obscure the active text area if connected
 ```
+
+---
+
+## 4. Resolution Status (2025-12-13)
+
+> [!TIP]
+> The following issues from this audit have been **RESOLVED**:
+
+| Issue | Status | Implementation |
+|-------|--------|----------------|
+| Dead Code (duplicate return) | ✅ Fixed | Removed in hook extraction |
+| `isInitialized` never set | ✅ Fixed | Now set in `useCollaborativeEditor.ts` on `init` message |
+| Network Flood (no debounce) | ✅ Fixed | `useDebounce` hook (300ms) in `hooks/useDebounce.ts` |
+| Cursor Jitter | ✅ Fixed | `useLayoutEffect` for synchronous cursor restoration |
+| Hardcoded `h-96` | ✅ Fixed | Changed to `min-h-[400px]` with flex layout |
+
+**Remaining Architectural Recommendations:**
+- ResizeObserver for dynamic layouts (deferred)
+- Full OT/CRDT cursor transformation (requires backend changes)
+
