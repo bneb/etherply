@@ -39,13 +39,14 @@ npm run dev
 *Open http://localhost:3000 in two browser windows.*
 
 ## Documentation Index
+- [**Product Roadmap**](docs/ROADMAP.md) - Strategic direction & Pivot plan.
 - [Architecture Overview](docs/architecture.md) - System design and data flow diagrams.
 - [API Reference](docs/api_reference.md) - WebSocket protocol and REST endpoints.
 - [Integration Guide](docs/integrate.md) - 5-minute quickstart.
 - [Commercial Due Diligence](docs/commercial_due_diligence.md) - Investment analysis.
-- [Technical Debt Alert](docs/tech_debt.md) - Known limitations.
+- [Technical Debt Alert](docs/tech_debt.md) - Critical architectural warnings.
 - [Quality Audit](docs/QUALITY_AUDIT.md) - Frontend analysis.
 
 ## Status
-- **Metric:** Weekly Active Teams (WATs)
-- **Current Phase:** Series A Preparation / MVP hardening.
+- **Metric:** Architecture Robustness / Correctness
+- **Current Phase:** **PIVOT** (See [ROADMAP.md](docs/ROADMAP.md)) - Paused feature work for core re-engineering.

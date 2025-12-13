@@ -1,27 +1,50 @@
-# Technical Debt Alert & Refactoring Plan
+# Technical Debt & Architectural Failures
 
-> [!WARNING]
-> COMPLIANCE: REQUIRED OUTPUT FOR SERIES A TECHNICAL DUE DILIGENCE.
+> [!CAUTION]
+> **CRITICAL ARCHITECTURAL WARNING**
+> The current system is a Proof of Concept (PoC) and must NOT be deployed to production environments requiring data durability or conflict resolution guarantees.
 
-## Current State
-The current MVP uses `store.DiskStore` with Append-Only File (AOF) persistence via `gob` encoding. This provides **MVP Durability** - data survives server restarts. However, for production scale, this single-file approach has limitations:
-- Single-node bottleneck (no horizontal scaling)
-- No transaction isolation between workspaces
-- Recovery time increases with log size
+## Severity Levels
+- **[CRITICAL]** System failure imminent at scale. Immediate remediation required.
+- **[HIGH]** Significant operational risk. Remediation required before V1.0.
+- **[MEDIUM]** Maintenance burden. Plan for Q3.
 
-## Critical Refactoring Steps (Next 3 Sprints)
+## 1. Persistence Layer: The "Toy Database" [CRITICAL]
+*Location:* `internal/store/disk.go`
 
-### 1. Integrate Distributed Key-Value Store
-**Target:** FoundationDB (or CockroachDB as a fallback).
-**Action:** Implement the `store.StateStore` interface using the FDB Go client.
-**Why:** Guarantees serializable transactions and multi-region correctness.
+**The Failure:**
+The current implementation is a naive Append-Only File (AOF) that loads **ALL** data into RAM on startup.
+- **O(N) Startup Time:** Startup time scales linearly with history size.
+- **O(N) Memory Usage:** RAM usage is proportional to total data ever written.
+- **Single Point of Failure:** File corruption results in total data loss.
+- **Global Write Lock:** `s.mu.Lock()` prevents concurrent writes, capping throughput to single-disk IOPS.
 
-### 2. Implement Write-Ahead Logging (WAL)
-**Target:** Kafka or Redpanda.
-**Action:** Before applying to Memory/FDB, push the operation to a topic.
-**Why:** Decouples ingestion from processing and ensures we can "Time Travel" / Replay state if the engine crashes.
+**Remediation Plan:**
+- [ ] **DELETE** `internal/store/disk.go`.
+- [ ] Implement `Store` interface using an embedded LSM-tree (BadgerDB/Pebble) or external DB (Postgres/Redis).
+- [ ] Adopt **Write-Ahead Logging (WAL)** pattern for durability without blocking.
 
-### 3. Connection Sharding & Hashing
-**Target:** Consistent Hashing Ring.
-**Action:** Route `workspace_id` to specific Go pods based on a hash ring.
-**Why:** To support > 100k concurrent connections, we cannot have all workspaces on one node. This ensures locality for merge operations.
+## 2. Synchronization Engine: LWW "Data Loss" [CRITICAL]
+*Location:* `internal/crdt/engine.go`
+
+**The Failure:**
+The system uses "Last-Write-Wins" (LWW) based on timestamps.
+- **Race Conditions:** Clocks are not synchronized. A user with a clock 5 seconds ahead will overwrite all other concurrent edits.
+- **Intent Loss:** Simultaneous edits to the same field result in one being silently discarded.
+- **Mathematically Unsound:** Does not satisfy Strong Eventual Consistency (SEC) properties for text/sequences.
+
+**Remediation Plan:**
+- [ ] Adopt a formal CRDT (Yjs/Automerge/RGA).
+- [ ] Implement Vector Clocks / Lamport Timestamps for causal ordering.
+
+## 3. Client SDK: Thread Unsafe [HIGH]
+*Location:* `pkg/go-sdk/client.go`
+
+**The Failure:**
+The Go SDK client has no internal locking.
+- **Panic Risk:** Concurrent calls to `SendOperation` will race on the WebSocket connection.
+- **Undefined Behavior:** No guarantees on message ordering or state if sharing a client across goroutines.
+
+**Remediation Plan:**
+- [ ] Add `sync.RWMutex` around socket writes.
+- [ ] Implement an operation queue for offline/reconnecting states.

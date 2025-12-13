@@ -1,7 +1,9 @@
 # System Architecture
 
-> [!NOTE]
-> This document describes the high-level design of the EtherPly Real-time Sync Engine. It is intended for system architects and contributors.
+> [!CAUTION]
+> **DEPRECATED ARCHITECTURE**
+> This document describes the v0.x MVP architecture. It is known to be unscalable and incorrect for distributed state synchronization. 
+> See [ROADMAP.md](./ROADMAP.md) for the "Operation Ironclad" re-architecture plan.
 
 ## High-Level Overview
 
