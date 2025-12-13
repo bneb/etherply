@@ -1,12 +1,17 @@
 package crdt
 
 import (
+	"encoding/gob"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/bneb/etherply/etherply-sync-server/internal/store"
 )
+
+func init() {
+	gob.Register(Operation{})
+}
 
 // Operation represents a single mutation to the state.
 // For this MVP, we use Last-Write-Wins (LWW) Key-Value logic.

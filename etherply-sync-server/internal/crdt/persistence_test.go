@@ -1,0 +1,75 @@
+package crdt_test
+
+import (
+	"os"
+	"testing"
+	"time"
+
+	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
+	"github.com/bneb/etherply/etherply-sync-server/internal/store"
+)
+
+func TestEngine_Persistence_Integration(t *testing.T) {
+	// 1. Setup
+	tmpFile := "test_engine_store.aof"
+	defer os.Remove(tmpFile)
+
+	// 2. Initialize Store & Engine
+	ds, err := store.NewDiskStore(tmpFile)
+	if err != nil {
+		t.Fatalf("Failed to create disk store: %v", err)
+	}
+	engine := crdt.NewEngine(ds)
+
+	// 3. Process an Operation
+	op := crdt.Operation{
+		WorkspaceID: "ws-integration",
+		Key:         "user:1",
+		Value:       "connected",
+		Timestamp:   time.Now().UnixMicro(),
+	}
+
+	if err := engine.ProcessOperation(op); err != nil {
+		t.Fatalf("Failed to process operation: %v", err)
+	}
+
+	// 4. Close Store (Simulate Shutdown)
+	ds.Close()
+
+	// 5. Re-Open Store (Simulate Restart)
+	// We create a NEW Engine to ensure it reads from the store freshly
+	ds2, err := store.NewDiskStore(tmpFile)
+	if err != nil {
+		t.Fatalf("Failed to re-open disk store: %v", err)
+	}
+	defer ds2.Close()
+	engine2 := crdt.NewEngine(ds2)
+
+	// 6. Verify State
+	// We need to check if the engine correctly loaded the state.
+	// Since ProcessOperation uses LWW check, let's try to process an OLDER operation.
+	// If the state was loaded correctly (as Operation struct), the LWW check should discard this older op.
+	// If the state was NOT loaded (or loaded as map and failed assertion), the LWW check might behave differently
+	// or we can inspect the store directly.
+
+	// Let's inspect store directly via GetFullState
+	state, err := engine2.GetFullState("ws-integration")
+	if err != nil {
+		t.Fatalf("Failed to get full state: %v", err)
+	}
+
+	val, ok := state["user:1"]
+	if !ok {
+		t.Fatalf("Key user:1 missing from restored state")
+	}
+
+	// CRITICAL CHECK: Type Assertion
+	restoredOp, ok := val.(crdt.Operation)
+	if !ok {
+		t.Fatalf("CRITICAL: Restored value is NOT of type crdt.Operation. Got %T. This means gob didn't register the type.", val)
+	}
+
+	if restoredOp.Value != "connected" {
+		t.Errorf("Value mismatch. Got %v, want 'connected'", restoredOp.Value)
+	}
+}

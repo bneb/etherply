@@ -30,6 +30,7 @@ It is written in Go to maximize concurrency (goroutines) and minimize latency (a
 ## Configuration
 - `PORT`: (Optional) Port to listen on. Defaults to `8080`.
 - `etherply.aof`: (File) The Append-Only File created in the working directory for persistence.
+- `ETHERPLY_JWT_SECRET`: (Required) Shared secret for signing/verifying JWTs. Server will not start without this.
 
 ## Troubleshooting (2 AM Guide)
 - **"Failed to initialize persistence layer"**:

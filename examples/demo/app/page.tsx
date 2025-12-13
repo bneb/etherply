@@ -9,13 +9,33 @@ export default function Home() {
     const [client, setClient] = useState<EtherPlyClient | null>(null);
 
     useEffect(() => {
-        // Generate a random user ID for demo
-        const userId = "user_" + Math.floor(Math.random() * 10000);
-        const c = new EtherPlyClient({
-            workspaceId: "demo-workspace",
-            userId: userId
-        });
-        setClient(c);
+        const init = async () => {
+            // Generate a random user ID for demo
+            const userId = "user_" + Math.floor(Math.random() * 10000);
+
+            try {
+                // Fetch secure token from our own backend (Next.js server)
+                const res = await fetch(`/api/auth/token?userId=${userId}`);
+                if (!res.ok) {
+                    console.error("Failed to fetch auth token:", res.statusText);
+                    return;
+                }
+                const data = await res.json();
+
+                if (data.token) {
+                    const c = new EtherPlyClient({
+                        workspaceId: "demo-workspace",
+                        userId: userId,
+                        token: data.token
+                    });
+                    setClient(c);
+                }
+            } catch (err) {
+                console.error("Auth setup failed:", err);
+            }
+        };
+
+        init();
     }, []);
 
     if (!client) return null;

@@ -20,6 +20,16 @@ func main() {
 		port = "8080"
 	}
 
+	// AUTH SECURITY
+	jwtSecret := os.Getenv("ETHERPLY_JWT_SECRET")
+	if jwtSecret == "" {
+		// "Code quality and craftsmanship Absolutist" -> We don't allow insecure defaults silently.
+		// However, to be helpful, we can allow a flag or just log FATAL.
+		log.Println("[CRITICAL] ETHERPLY_JWT_SECRET is not set.")
+		log.Fatal("Server cannot start in unsecure mode. Please set ETHERPLY_JWT_SECRET.")
+	}
+	auth.Init(jwtSecret)
+
 	// Initialize Store (Persistent DiskStore for MVP Durability)
 	// We use a local file "etherply.aof". In production, this path comes from env.
 	stateStore, err := store.NewDiskStore("etherply.aof")

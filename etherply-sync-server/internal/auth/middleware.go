@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// Middleware performs basic bearer token validation.
-// For the MVP, it accepts any token that is not empty, representing a logged-in user.
+// Middleware performs strict bearer token validation.
+// It verifies the JWT signature using the server's shared secret.
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Allow CORS for the demo
