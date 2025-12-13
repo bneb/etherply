@@ -74,12 +74,21 @@ export class EtherPlyClient {
         };
     }
 
+    /**
+     * Sends a key-value operation to the sync server.
+     * Includes a timestamp (Unix microseconds) for LWW conflict resolution.
+     * @param key - The key to update (e.g., "document_text")
+     * @param value - The new value for the key
+     */
     sendOperation(key: string, value: any) {
         if (this.ws?.readyState === WebSocket.OPEN) {
             const start = performance.now();
+            // CRITICAL: timestamp is required for LWW (Last-Write-Wins) conflict resolution.
+            // Without it, operations may be dropped or lose to older operations.
+            const timestamp = Date.now() * 1000; // Convert to Unix microseconds
             this.ws.send(JSON.stringify({
                 type: 'op',
-                payload: { key, value }
+                payload: { key, value, timestamp }
             }));
             const latency = performance.now() - start;
             // Metric: client_sync_latency (fire to PostHog stub)
