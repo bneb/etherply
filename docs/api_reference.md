@@ -3,6 +3,8 @@
 ## WebSocket API
 **Endpoint:** `wss://api.etherply.com/v1/sync/{workspace_id}`
 
+> **Local Development:** Use `ws://localhost:8080/v1/sync/{workspace_id}` when running the server locally.
+
 ### Query Parameters
 - `token`: (Required) Bearer token for authentication.
 - `userId`: (Optional) Stub for overriding user ID in dev.

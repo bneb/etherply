@@ -34,18 +34,30 @@ func TestClient_Close_NilConnection(t *testing.T) {
 func TestClient_SendOperation_NotConnected(t *testing.T) {
 	client := etherply.NewClient("ws://localhost:8080", "test-token")
 
-	// SendOperation on nil connection should error or handle gracefully
-	// Current implementation will panic on nil.WriteJSON
-	// This test documents the current behavior - ideally it should return error
-	
-	// We defer recover to catch any panic
-	defer func() {
-		if r := recover(); r != nil {
-			t.Logf("Note: SendOperation panics on nil connection (expected for MVP)")
-		}
-	}()
+	// SendOperation on nil connection should return an error (not panic)
+	// This tests defensive coding: "The Happy Path is a Trap"
+	err := client.SendOperation("key", "value")
+	if err == nil {
+		t.Error("Expected error when calling SendOperation without established connection")
+	}
 
-	// This documents that SendOperation requires connection
-	// In future, this should return an error instead of panicking
-	_ = client.SendOperation("key", "value")
+	// Verify error message is informative
+	expected := "connection not established"
+	if err != nil && !contains(err.Error(), expected) {
+		t.Errorf("Expected error containing '%s', got: %v", expected, err)
+	}
+}
+
+// contains checks if s contains substr (simple helper for tests)
+func contains(s, substr string) bool {
+	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsHelper(s, substr))
+}
+
+func containsHelper(s, substr string) bool {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return true
+		}
+	}
+	return false
 }

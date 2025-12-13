@@ -1,7 +1,9 @@
 package etherply
 
 import (
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -32,12 +34,22 @@ func (c *Client) Connect(workspaceID string) error {
 	return nil
 }
 
+// SendOperation transmits a key-value operation to the sync server.
+// It includes a timestamp for LWW (Last-Write-Wins) conflict resolution.
+// Returns an error if the connection has not been established via Connect().
 func (c *Client) SendOperation(key string, value interface{}) error {
+	// Defensive: Check connection before attempting to write.
+	// "The Happy Path is a Trap" - we must handle the not-connected case gracefully.
+	if c.Conn == nil {
+		return fmt.Errorf("cannot send operation: connection not established (call Connect first)")
+	}
+
 	msg := map[string]interface{}{
 		"type": "op",
 		"payload": map[string]interface{}{
-			"key":   key,
-			"value": value,
+			"key":       key,
+			"value":     value,
+			"timestamp": time.Now().UnixMicro(),
 		},
 	}
 	return c.Conn.WriteJSON(msg)
