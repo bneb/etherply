@@ -1,6 +1,7 @@
 package presence
 
 import (
+	"sync"
 	"testing"
 )
 
@@ -89,5 +90,30 @@ func TestManager_UpdateUserStatus(t *testing.T) {
 	}
 	if users[0].Status != "idle" {
 		t.Errorf("Expected status 'idle', got %s", users[0].Status)
+	}
+}
+
+func TestManager_Concurrency(t *testing.T) {
+	m := NewManager()
+
+	// Test concurrent access doesn't cause race conditions
+	var wg sync.WaitGroup
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go func(n int) {
+			defer wg.Done()
+			user := User{UserID: "user", Status: "online"}
+			m.AddUser("ws", user)
+			m.GetUsers("ws")
+			m.RemoveUser("ws", "user")
+		}(i)
+	}
+	wg.Wait()
+
+	// After all goroutines complete, workspace should be empty or have one user
+	// (depending on timing). Just verify no panic occurred.
+	users := m.GetUsers("ws")
+	if users != nil && len(users) > 1 {
+		t.Errorf("Expected 0 or 1 user after concurrent ops, got %d", len(users))
 	}
 }

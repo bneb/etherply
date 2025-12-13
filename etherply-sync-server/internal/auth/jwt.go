@@ -1,3 +1,12 @@
+// Package auth provides JWT-based authentication for the EtherPly sync server.
+// It implements a strict "Fail Secure" policy: if ETHERPLY_JWT_SECRET is not
+// configured, the server refuses to start. All requests (except CORS preflight)
+// require a valid Bearer token in the Authorization header or 'token' query param.
+//
+// Usage:
+//
+//	auth.Init(os.Getenv("ETHERPLY_JWT_SECRET"))
+//	handler := auth.Middleware(myHandler)
 package auth
 
 import (

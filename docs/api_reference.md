@@ -18,10 +18,12 @@
   "type": "op",
   "payload": {
     "key": "string",
-    "value": "any"
+    "value": "any",
+    "timestamp": 1702483200000000
   }
 }
 ```
+> **Note:** `timestamp` is Unix microseconds. Required for LWW (Last-Write-Wins) conflict resolution. Use `Date.now() * 1000` in JavaScript or `time.Now().UnixMicro()` in Go.
 
 #### Server -> Client
 **Initial State**

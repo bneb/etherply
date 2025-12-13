@@ -1,3 +1,14 @@
+// Package crdt implements Conflict-Free Replicated Data Type (CRDT) logic
+// for the EtherPly sync engine. Currently implements Last-Write-Wins (LWW)
+// register semantics: when concurrent updates occur, the operation with the
+// highest timestamp wins.
+//
+// Operations include a client-provided timestamp (Unix microseconds) for
+// conflict resolution. The engine logs and discards stale operations that
+// arrive out of order, ensuring eventual consistency across all clients.
+//
+// Future iterations may implement more sophisticated CRDTs such as RGA for
+// collaborative text editing or OR-Set for collection operations.
 package crdt
 
 import (

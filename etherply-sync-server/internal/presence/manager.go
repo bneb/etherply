@@ -1,3 +1,10 @@
+// Package presence provides ephemeral user presence tracking for workspaces.
+// It maintains a real-time view of which users are connected to each workspace
+// and their current status (online, idle, etc.). This data is not persisted
+// and is rebuilt as connections are established and terminated.
+//
+// The Manager is thread-safe and can be accessed concurrently from multiple
+// WebSocket handler goroutines.
 package presence
 
 import (
