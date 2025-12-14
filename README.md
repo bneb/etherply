@@ -9,30 +9,38 @@ This monorepo contains the following components:
 | Directory | Component | Description |
 |---|---|---|
 | [`etherply-sync-server/`](./etherply-sync-server) | **Core Engine** | Go-based WebSocket server with CRDT logic and Disk persistence. |
-| [`pkg/go-sdk/`](./pkg/go-sdk) | **Client SDK** | Go client library for connecting to the engine. |
-| [`examples/demo/`](./examples/demo) | **Demo App** | Next.js 14 "Magic Moment" collaborative editor demo. |
-| [`docs/`](./docs) | **Documentation** | Guides, API Reference, and Strategic Analysis. |
+| [`packages/sdk-js/`](./packages/sdk-js) | **JS SDK** | Client library for React/Node.js. |
+| [`packages/sdk-python/`](./packages/sdk-python) | **Python SDK** | Client library for Backend bots & IoT. |
+| [`apps/docs/`](./apps/docs) | **Documentation** | Documentation site (docusaurus). |
+
+### Examples Library
+| Example | Path | Tech Stack |
+|---|---|---|
+| **Text Editor** | [`examples/text-editor`](./examples/text-editor) | React, `useDocument` (The "Hello World") |
+| **Kanban Board** | [`examples/kanban`](./examples/kanban) | React, DnD, Complex Object Sync |
+| **Cursors** | [`examples/cursors`](./examples/cursors) | React, High-Freq Presence |
+| **IoT Dashboard** | [`examples/iot`](./examples/iot) | Python (Simulator) + Next.js |
+| **Voting App** | [`examples/voting`](./examples/voting) | Python (Bot) + Next.js |
 
 ## Quick Start (Run the Full Stack)
 
 ### Prerequisites
-- **Go 1.20+**: Verify with `go version`
+- **Go 1.23+**: Verify with `go version`
 - **Node.js 18+**: Verify with `node -v`
 
 ### 1. Start the Backend
 ```bash
 cd etherply-sync-server
 go mod tidy
-# 2 AM Check: Ensure port 8080 is free before running
-# lsof -i :8080 
+# Ensure port 8080 is free
 go run main.go
 ```
 *Wait for output: "EtherPly Sync Server starting on port 8080"*
 
-### 2. Start the Frontend Demo
+### 2. Start the Frontend (Text Editor)
 In a new terminal:
 ```bash
-cd examples/demo
+cd examples/text-editor
 npm install
 npm run dev
 ```

@@ -68,5 +68,6 @@ function MyComponent() {
 |----------|-------------|
 | [API Reference](./api/http-api.md) | Full WebSocket and REST API docs |
 | [Architecture](./concepts/architecture.md) | How EtherPly works under the hood |
-| [Demo App](https://github.com/bneb/etherply/tree/main/examples/demo) | Full Next.js collaborative editor |
+| [Demo App](https://github.com/bneb/etherply/tree/main/examples/text-editor) | "Hello World" Text Editor |
+| [Examples](https://github.com/bneb/etherply/tree/main/examples) | Full Library (Kanban, Cursors, IoT) |
 | [Go SDK](https://github.com/bneb/etherply/tree/main/pkg/go-sdk) | For backend-to-backend sync |
