@@ -17,6 +17,9 @@ import { Providers } from "@/components/Providers";
 export const metadata: Metadata = {
   title: "IoT Control Center | EtherPly",
   description: "Real-time telemetry dashboard",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

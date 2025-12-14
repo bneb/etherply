@@ -26,12 +26,25 @@ EtherPly is designed to be "Enterprise-Ready" out of the box. We provide officia
 
 ## Configuration
 
-Configure the server via environment variables in `docker-compose.yml`:
+1. **Create a `.env` file**:
+   ```bash
+   cp .env.example .env
+   # Or create manually:
+   # PORT=8080
+   # ETHERPLY_JWT_SECRET=production-secret-123
+   ```
+
+2. **Run with Config**:
+   ```bash
+   docker-compose --env-file .env up -d
+   ```
+
+### Reference Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `PORT` | HTTP Port | `8080` |
-| `etherply_JWT_SECRET` | **Required**. Secret for verifying tokens. | - |
+| `ETHERPLY_JWT_SECRET` | **Required**. Secret for verifying tokens. | - |
 | `SYNC_STRATEGY` | Algorithm (`automerge`, `lww`) | `automerge` |
 | `BADGER_PATH` | Path to DB file inside container | `/data/badger.db` |
 

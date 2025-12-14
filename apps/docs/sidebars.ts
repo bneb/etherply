@@ -28,6 +28,22 @@ const sidebars: SidebarsConfig = {
     'troubleshooting',
     {
       type: 'category',
+      label: 'Deployment',
+      link: { type: 'doc', id: 'deployment' },
+      items: [],
+    },
+    {
+      type: 'category',
+      label: 'Project Status',
+      collapsed: false,
+      items: [
+        'roadmap',
+        'commercial_due_diligence',
+        'quality_audit',
+      ],
+    },
+    {
+      type: 'category',
       label: 'API Reference',
       link: {
         type: 'generated-index',

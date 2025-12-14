@@ -17,6 +17,9 @@ import { Providers } from "@/components/Providers";
 export const metadata: Metadata = {
   title: "Real-time Kanban | EtherPly",
   description: "Real-time drag and drop Kanban board",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

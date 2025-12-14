@@ -1,64 +1,114 @@
-# EtherPly Go Client SDK
+# EtherPly Go SDK
 
-## Overview
-A lightweight, idiomatic Go library for connecting to the EtherPly Sync Engine via WebSockets.
-Designed for backend-to-backend synchronization (e.g., seeding data) or building custom Go-based clients (e.g., CLI tools, bots).
+The official Go client for [EtherPly](https://etherply.com).
+Build high-performance, real-time backend services, synchronizers, and bots.
+
+![Go Reference](https://pkg.go.dev/badge/github.com/bneb/etherply/pkg/go-sdk.svg)
+![Build Status](https://img.shields.io/github/actions/workflow/status/bneb/etherply/ci.yml)
+![License](https://img.shields.io/github/license/bneb/etherply)
+
+## Features
+
+- **Type-Safe**: Native Go structs and interfaces.
+- **Resilient**: Automatic reconnection with exponential backoff.
+- **Concurrent**: Thread-safe design powered by channels.
+- **Efficient**: Binary message format support (future).
 
 ## Installation
+
 ```bash
 go get github.com/bneb/etherply/pkg/go-sdk
 ```
 
 ## Quick Start
+
+### 1. Connect to the EtherPly Cloud
+
 ```go
 package main
 
 import (
+    "context"
     "log"
-    "github.com/bneb/etherply/pkg/go-sdk"
+
+    "github.com/bneb/etherply/pkg/go-sdk/client"
 )
 
 func main() {
-    // 1. Initialize
-    // Tip: In production, fetch tokens from your auth provider, do not hardcode.
-    client := etherply.NewClient("ws://localhost:8080", "valid-jwt-token")
-
-    // 2. Connect
-    // This performs the WebSocket handshake and authenticates.
-    if err := client.Connect("my-workspace"); err != nil {
-        log.Fatalf("Failed to connect: %v", err)
-    }
-    defer client.Close()
-
-    // 3. Listen (Non-blocking)
-    client.Listen(func(msg map[string]interface{}) {
-        log.Printf("Received: %v", msg)
+    // Initialize the client
+    c := client.New(client.Config{
+        WorkspaceID: "my-workspace",
+        Token:       "your-jwt-token",
+        Host:        "api.etherply.com", // or localhost:8080
+        Secure:      true,               // false for localhost
     })
 
-    // 4. Send Operation
-    // Operations are LWW (Last-Write-Wins). The SDK automatically attaches a microsecond timestamp.
-    if err := client.SendOperation("greeting", "Hello EtherPly"); err != nil {
-         log.Printf("Send failed: %v", err)
+    // Connect (blocking or async)
+    if err := c.Connect(context.Background()); err != nil {
+        log.Fatalf("Failed to connect: %v", err)
     }
-    
-    // Keep main thread alive
-    select {}
+    defer c.Close()
+
+    log.Println("✅ Connected to EtherPly!")
 }
 ```
 
-## Architecture & Thread Safety
+### 2. Subscribe to Updates
 
-### Concurrency Model
-- **`SendOperation`**: Thread-safe. You can call this from multiple goroutines.
-- **`Listen`**: Runs on its own goroutine. The callback is executed sequentially for each incoming message.
-- **`Close`**: Thread-safe.
+Use Go channels to handle real-time updates without blocking your main loop.
 
-### Error Handling
-The SDK follows Go idioms. Errors are returned explicitly.
-- If `Connect()` fails, the client is unusable.
-- If `SendOperation()` fails, it typically means the connection dropped. The current SDK version does **not** automatically reconnect (see [Roadmap](../docs/tech_debt.md)).
+```go
+// Create a channel for updates
+updates := make(chan client.Update, 100)
 
-## Internals
-- **Protocol**: Uses `gorilla/websocket`.
-- **Serialization**: JSON.
-- **Timestamps**: Uses `time.Now().UnixMicro()` for CRDT conflict resolution.
+// Subscribe
+c.Subscribe(updates)
+
+// Process in a goroutine
+go func() {
+    for update := range updates {
+        log.Printf("Received update: Key=%s Value=%v", update.Key, update.Value)
+    }
+}()
+```
+
+### 3. Mutate State
+
+Sending operations is thread-safe and asynchronous.
+
+```go
+// Set a simple value
+if err := c.Set("status", "active"); err != nil {
+    log.Println("Error sending op:", err)
+}
+
+// Set a complex object (automatically marshaled)
+data := map[string]interface{}{
+    "users": 42,
+    "load":  0.85,
+}
+c.Set("metrics", data)
+```
+
+## Configuration
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `WorkspaceID` | `string` | **Required** | The room/workspace identifier. |
+| `Token` | `string` | **Required** | Access token. |
+| `Host` | `string` | `api.etherply.com` | Server hostname. |
+| `Secure` | `bool` | `true` | Use WSS (TLS) vs WS. |
+| `LogLevel` | `int` | `0` (Info) | Logging verbosity. |
+
+## Error Handling
+
+The SDK uses standard Go errors. You should check for `client.ErrConnectionClosed` if you need to detect disconnects manually, although the client handles reconnection automatically.
+
+```go
+if err := c.Connect(ctx); err != nil {
+    // Handle initial connection failure
+}
+```
+
+## License
+MIT

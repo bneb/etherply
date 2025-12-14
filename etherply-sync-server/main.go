@@ -25,13 +25,15 @@ import (
 //
 // Architecture Overview:
 //
-//  1. Config: Loads configuration from environment variables.
-//  2. Persistence: Initializes BadgerDB for durability.
+//  1. Config: Loads configuration from environment variables (12-factor app).
+//  2. Persistence (BadgerDB): We use BadgerDB (LSM tree) instead of BoltDB because
+//     sync engines are write-heavy. Persistent allows recovery from crash loops.
 //  3. Engine: Starts the sync engine with configurable strategy (CRDT, LWW, etc).
-//  4. Replication: Optionally enables multi-region replication via NATS.
-//  5. Presence: Starts the ephemeral Presence Manager.
-//  6. HTTP: Sets up routes and health checks.
-//  7. Graceful Shutdown: Handles SIGTERM/SIGINT for clean connection draining.
+//  4. Replication: Optionally enables multi-region replication via NATS JetStream.
+//  5. Presence: Starts the ephemeral Presence Manager (Redis-backed in prod, memory in dev).
+//  6. HTTP: Sets up routes and health checks (readiness/liveness probes).
+//  7. Graceful Shutdown: Handles SIGTERM for K8s rolling updates. A hard kill
+//     risks corrupting the LSM tree.
 //
 // Configuration:
 //   - SYNC_STRATEGY: automerge (default), lww, server-auth
@@ -56,6 +58,8 @@ func main() {
 	auth.Init(cfg.JWTSecret)
 
 	// Initialize Store (BadgerDB v4)
+	// CRITICAL: Ensure this path is mounted on a PVC in Kubernetes.
+	// Ephemeral storage will lead to dataloss on pod restart.
 	stateStore, err := store.NewBadgerStore(cfg.BadgerPath)
 	if err != nil {
 		log.Fatalf("Failed to initialize persistence layer at %s: %v", cfg.BadgerPath, err)
@@ -112,6 +116,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	// Health Check Routes (no auth required)
+	// Used by K8s liveness/readiness probes
 	mux.HandleFunc("/healthz", healthChecker.HandleHealthz)
 	mux.HandleFunc("/readyz", healthChecker.HandleReadyz)
 
@@ -146,6 +151,8 @@ func main() {
 	}()
 
 	// Wait for shutdown signal
+	// We MUST capture SIGTERM to allow connections to drain.
+	// K8s sends SIGTERM -> wait -> SIGKILL.
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
@@ -161,6 +168,7 @@ func main() {
 		defer cancel()
 
 		if err := httpServer.Shutdown(ctx); err != nil {
+			// CRITICAL: If this happens, some data in memory might not be flushed to BadgerDB.
 			logger.Error("graceful_shutdown_failed", "error", err)
 			httpServer.Close()
 		}

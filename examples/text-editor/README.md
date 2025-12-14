@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EtherPly Example: Text Editor
 
-## Getting Started
+> **Concept**: The "Hello World" of real-time collaboration. Demonstrates basic **LWW (Last-Write-Wins) Register synchronization** for a shared text area.
 
-First, run the development server:
+## Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This example uses the simplest sync primitive: `useDocument`.
+
+```mermaid
+graph LR
+    UserA[User A] --"Type 'H'"--> Local[Local State]
+    Local --"WebSocket"--> Server[Sync Server]
+    Server --"Broadcast"--> UserB[User B]
+    UserB --"Update"--> Editor[Text Area]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Data Structure
+```ts
+// Key: "shared-text"
+// Value: string
+const { value, setValue } = useDocument({ 
+    key: 'shared-text',
+    initialValue: '' 
+});
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Run It
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Prerequisites
+Ensure the **EtherPly Sync Server** is running (`:8080`).
 
-## Learn More
+### 2. Start Application
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Verify
+1. Open `http://localhost:3000` in two windows.
+2. Type in Window A.
+3. Observe specific character-by-character updates in Window B.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Troubleshooting
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### "Text jumps back"
+**Cause**: High latency or race condition with LWW strategy.
+**Fix**: This example uses LWW. For production text editing, switch to the `Yjs` or `Automerge` strategy in `etherply-sync-server/main.go`.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Input loses focus
+**Cause**: React re-rendering the entire component on sync update.
+**Fix**: Ensure `useDocument` is called at the top level, not inside a loop or conditional.

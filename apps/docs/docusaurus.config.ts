@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'EtherPly',
   tagline: 'The infrastructure of presence.',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   url: 'https://docs.etherply.com',
   baseUrl: '/',
@@ -52,6 +52,7 @@ const config: Config = {
       logo: {
         alt: 'EtherPly Logo',
         src: 'img/logo.svg',
+        srcDark: 'img/logo-dark.svg',
       },
       items: [
         {

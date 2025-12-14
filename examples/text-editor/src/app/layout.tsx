@@ -17,6 +17,9 @@ import { Providers } from "@/components/Providers";
 export const metadata: Metadata = {
   title: "EtherPly Text Editor",
   description: "Collaborative text editor example built with EtherPly",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

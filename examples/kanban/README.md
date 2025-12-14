@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EtherPly Example: Kanban Board
 
-## Getting Started
+> **Concept**: A collaborative Kanban board demonstrating **complex nested state synchronization** (arrays of objects) and **optimistic UI updates** for drag-and-drop interactions.
 
-First, run the development server:
+## Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+We treat the entire board as a single CRDT document.
+
+```mermaid
+graph TD
+    UserA[User A] -->|Drag Card| LocalState[Local State]
+    LocalState -->|Optimistic Update| UI[UI Layer]
+    LocalState -->|WebSocket| Server[EtherPly Server]
+    Server -->|Broadcast| UserB[User B]
+    UserB -->|Merge Change| LocalStateB[Local State B]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Data Structure
+```ts
+interface KanbanState {
+  columns: {
+    id: string;
+    title: string;
+    cardIds: string[]; // Order preserved via array index
+  }[];
+  cards: Record<string, Card>; // Normalized data
+}
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Run It
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Prerequisites
+Ensure the **EtherPly Sync Server** is running on port `:8080`.
+```bash
+# In separate terminal
+curl http://localhost:8080/healthz 
+# Expected: 200 OK
+```
 
-## Learn More
+### 2. Start Application
+```bash
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Verify
+1. Open `http://localhost:3000` in two windows.
+2. Drag a card in window A.
+3. Verify it moves instantly in window B.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Troubleshooting
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Cards snap back after drop
+**Cause**: The server rejected the update or the WebSocket is disconnected.
+**Fix**: Check server logs for `validation_failed` errors. Ensure `useDocument` is connected.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### "Duplicate keys" error in console
+**Cause**: Two users created a card with the same ID (unlikely with UUIDs) or a merge conflict occurred on the array.
+**Fix**: Refresh the page to reload the canonical state from the server.

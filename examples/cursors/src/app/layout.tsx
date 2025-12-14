@@ -17,6 +17,9 @@ import { Providers } from "@/components/Providers";
 export const metadata: Metadata = {
   title: "Multiplayer Cursors | EtherPly",
   description: "High-performance multiplayer cursors demo",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
