@@ -4,10 +4,11 @@
 **Status:** 🚀 Q4 2026 - "Operation Stripe" (Developer Experience)  
 **Focus:** SDK, Documentation, Customer Validation
 
-> [!NOTE]
+> :::note
 > **Infrastructure Complete.** Q1-Q3 2026 ("Operation Ironclad") delivered production-grade infrastructure: Automerge CRDT, BadgerDB persistence, NATS replication, and on-premise options.
 >
 > **Now: Go-To-Market.** Q4 2026 ("Operation Stripe") focuses on developer experience—the Stripe playbook. Ship the npm SDK, world-class docs, and get our first 10 paying customers.
+> :::
 
 ---
 
@@ -68,8 +69,9 @@
 **Success Metric:** 50 production apps using EtherPly. 10 paying customers on Startup tier.  
 **Philosophy:** Stripe didn't beat PayPal with better technology—they beat them with 7 lines of code, world-class docs, and obsessive developer empathy.
 
-> [!IMPORTANT]
-> This phase directly addresses the [Commercial Due Diligence](file:///Users/kevin/.gemini/antigravity/brain/ff41f41a-b3cd-4e9f-96a3-0541e171a50f/commercial_due_diligence_report.md.resolved) feedback: "No JS SDK = no market" and "Get 3 paying customers."
+> :::important
+> This phase directly addresses the Commercial Due Diligence feedback: "No JS SDK = no market" and "Get 3 paying customers."
+> :::
 
 ### 1. SDK & Distribution (Priority: CRITICAL)
 *Current State:* Go SDK only. TypeScript client exists but is not published.  
