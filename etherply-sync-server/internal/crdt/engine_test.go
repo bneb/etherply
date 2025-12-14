@@ -77,10 +77,10 @@ func TestDataCorruption_SelfHealing(t *testing.T) {
 
 	// Manually inject bad data (invalid bytes that aren't an automerge doc)
 	// The implementation checks for []byte type first, then Load().
-	// Storage now stores []byte under "automerge_root".
+	// Storage now stores []byte under "sync_doc".
 
 	// Corrupt the root blob
-	ms.Set(workspaceID, "automerge_root", []byte("GARBAGE DATA NOT AUTOMERGE"))
+	ms.Set(workspaceID, "sync_doc", []byte("GARBAGE DATA NOT AUTOMERGE"))
 
 	// Apply a valid operation on top of it
 	recoveryOp := crdt.Operation{
