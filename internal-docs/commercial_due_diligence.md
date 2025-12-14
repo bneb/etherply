@@ -2,6 +2,7 @@
 sidebar_position: 10
 title: Commercial Due Diligence
 description: Assessment of Venture Viability (BCG Partner Audit)
+internal: true
 ---
 
 # Commercial Due Diligence: EtherPly

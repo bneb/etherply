@@ -24,6 +24,14 @@ export type DocNode = {
     children?: DocNode[];
 };
 
+// Helper to pretty print filenames
+function prettifyName(name: string): string {
+    return name
+        .replace(/\.mdx?$/, '') // Remove extension
+        .replace(/[-_]/g, ' ')   // Replace separators with spaces
+        .replace(/\b\w/g, c => c.toUpperCase()); // Title Case
+}
+
 // Recursive function to get all docs
 export function getDocsTree(dir: string = DOCS_ROOT, relativePath: string = ''): DocNode[] {
     const items = fs.readdirSync(dir, { withFileTypes: true });
@@ -33,21 +41,25 @@ export function getDocsTree(dir: string = DOCS_ROOT, relativePath: string = ''):
         const itemRelativePath = path.join(relativePath, item.name);
 
         if (item.isDirectory()) {
+            const children = getDocsTree(fullPath, itemRelativePath);
+            if (children.length === 0) return null;
+
             return {
                 name: item.name,
                 path: itemRelativePath,
                 isDirectory: true,
-                children: getDocsTree(fullPath, itemRelativePath),
+                children: children,
             };
         } else if (item.name.endsWith('.md') || item.name.endsWith('.mdx')) {
             const fileContent = fs.readFileSync(fullPath, 'utf8');
             const { data } = matter(fileContent);
+
             return {
                 name: item.name,
                 path: itemRelativePath.replace(/\.mdx?$/, ''),
                 isDirectory: false,
                 metadata: {
-                    title: data.title || item.name,
+                    title: data.title || prettifyName(item.name),
                     description: data.description,
                     sidebar_label: data.sidebar_label,
                     sidebar_position: data.sidebar_position,

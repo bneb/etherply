@@ -1,6 +1,7 @@
 ---
 slug: /governance
 title: Governance
+internal: true
 ---
 
 # Governance & Ownership Registry

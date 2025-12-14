@@ -1,3 +1,8 @@
+---
+title: 2025 Strategy
+internal: true
+---
+
 # EtherPly 2025 Strategic Roadmap (Founding CPO)
 
 **CONFIDENTIAL: INTERNAL ENGINEERING & LEADERSHIP ONLY**

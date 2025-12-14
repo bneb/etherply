@@ -1,3 +1,8 @@
+---
+title: Quality Audit
+internal: true
+---
+
 # 🕵️ Quality Gatekeeper Audit: CollaborativeEditor.tsx
 
 **Date:** 2025-12-13
