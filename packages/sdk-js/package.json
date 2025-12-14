@@ -28,6 +28,7 @@
         "test:run": "vitest run",
         "lint": "eslint src --ext .ts,.tsx",
         "typecheck": "tsc --noEmit",
+        "docs:generate": "typedoc",
         "prepublishOnly": "npm run build"
     },
     "keywords": [
@@ -69,6 +70,8 @@
         "react": "^18.2.0",
         "react-dom": "^18.3.1",
         "tsup": "^8.0.0",
+        "typedoc": "^0.28.15",
+        "typedoc-plugin-markdown": "^4.9.0",
         "typescript": "^5.3.0",
         "vitest": "^1.0.0"
     }
