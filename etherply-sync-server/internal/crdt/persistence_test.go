@@ -56,12 +56,12 @@ func TestEngine_Persistence_Integration(t *testing.T) {
 	// or we can inspect the store directly.
 
 	// Let's inspect store directly via GetFullState
-	state, err := engine2.GetFullState("ws-integration")
+	snapshot, err := engine2.GetFullState("ws-integration")
 	if err != nil {
 		t.Fatalf("Failed to get full state: %v", err)
 	}
 
-	val, ok := state["user:1"]
+	val, ok := snapshot.Data["user:1"]
 	if !ok {
 		t.Fatalf("Key user:1 missing from restored state")
 	}

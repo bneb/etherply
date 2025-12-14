@@ -18,12 +18,12 @@ func TestValidateToken(t *testing.T) {
 			"sub": "user-123",
 			"exp": time.Now().Add(time.Hour).Unix(),
 		})
-		
+
 		key := []byte(secret)
 		if !valid {
 			key = []byte("wrong-key")
 		}
-		
+
 		s, _ := token.SignedString(key)
 		return s
 	}
@@ -45,7 +45,7 @@ func TestValidateToken(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := ValidateToken(tt.token); (err != nil) != tt.wantErr {
+			if _, err := ValidateToken(tt.token); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateToken() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

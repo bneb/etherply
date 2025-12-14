@@ -28,6 +28,19 @@ type Operation struct {
 	Timestamp   int64       `json:"timestamp"` // Unix Microseconds, informative only
 }
 
+// Snapshot represents a point-in-time view of the document state including vector clock heads.
+type Snapshot struct {
+	Data  map[string]interface{} `json:"data"`
+	Heads []string               `json:"heads"`
+}
+
+// Change represents a single commit in history.
+type Change struct {
+	Hash      string `json:"hash"`
+	Message   string `json:"message"`
+	Timestamp int64  `json:"timestamp"`
+}
+
 type Engine struct {
 	store  store.Store
 	logger *slog.Logger
@@ -116,7 +129,19 @@ func (e *Engine) ProcessOperation(op Operation) error {
 	}
 
 	// 3. Commit logic (Automerge handles history)
-	// commit := doc.Commit("scan", automerge.CommitOptions{Time: time.Now()})
+	// We use the client timestamp if provided to allow ensuring history reflects valid wall clock time from client perspective
+	// This is important for "offline" edits.
+	now := time.Now()
+	commitOpts := automerge.CommitOptions{
+		Time: &now,
+	}
+	if op.Timestamp > 0 {
+		// Convert microsecond timestamp to time.Time
+		t := time.UnixMicro(op.Timestamp)
+		commitOpts.Time = &t
+	}
+	// "op" msg serves as commit message
+	doc.Commit(fmt.Sprintf("set %s", op.Key), commitOpts)
 
 	// 4. Save back to persistence
 	newBytes := doc.Save()
@@ -137,8 +162,8 @@ func (e *Engine) ProcessOperation(op Operation) error {
 	return nil
 }
 
-// GetFullState returns the materialized JSON-like view of the document.
-func (e *Engine) GetFullState(workspaceID string) (map[string]interface{}, error) {
+// GetFullState returns the materialized JSON-like view of the document and its current heads.
+func (e *Engine) GetFullState(workspaceID string) (*Snapshot, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
@@ -147,7 +172,10 @@ func (e *Engine) GetFullState(workspaceID string) (map[string]interface{}, error
 		return nil, err
 	}
 	if !exists {
-		return map[string]interface{}{}, nil
+		return &Snapshot{
+			Data:  map[string]interface{}{},
+			Heads: []string{},
+		}, nil
 	}
 
 	data, ok := val.([]byte)
@@ -160,26 +188,115 @@ func (e *Engine) GetFullState(workspaceID string) (map[string]interface{}, error
 		return nil, err
 	}
 
-	// Get the root map and convert to Go map
-	// doc.Root() returns a Value. Get() returns value.
-	// We want the whole document as a map.
-	// doc.Root() isn't a map itself, it provides access.
-	// doc.Path().Get() on empty path gives root?
-	// The canonical way to dump content is strictly typed or usually via Map().
-	// But doc.Path("") probably refers to root.
-
 	rootVal, err := doc.Path().Get()
 	if err != nil {
 		return nil, err
 	}
 
-	// automerge-go implementation detail: use As[T] to convert
 	m, err := automerge.As[map[string]interface{}](rootVal)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert root to map: %w", err)
 	}
 
-	return m, nil
+	// Convert heads (ChangeHash) to string slice for transport
+	heads := doc.Heads()
+	headStrs := make([]string, len(heads))
+	for i, h := range heads {
+		headStrs[i] = h.String()
+	}
+
+	return &Snapshot{
+		Data:  m,
+		Heads: headStrs,
+	}, nil
+}
+
+// GetChanges returns the delta (changes) since a specific version vector (heads).
+// If 'since' is nil/empty, it returns the full history.
+func (e *Engine) GetChanges(workspaceID string, since []string) ([]byte, error) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	val, exists, err := e.store.Get(workspaceID, "automerge_root")
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return []byte{}, nil
+	}
+
+	data, ok := val.([]byte)
+	if !ok {
+		return nil, fmt.Errorf("storage corruption: expected []byte")
+	}
+
+	doc, err := automerge.Load(data)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: Implement efficient Delta Sync using automerge.Doc.Changes() or SaveIncremental().
+	// Currently we return the full compressed document state.
+	// This is valid but less efficient.
+	// We need to resolve the API for ParseChangeHash and Change.Bytes() to enable deltas.
+
+	return doc.Save(), nil
+}
+
+// GetHistory returns the list of changes for the document.
+func (e *Engine) GetHistory(workspaceID string) ([]Change, error) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	val, exists, err := e.store.Get(workspaceID, "automerge_root")
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return []Change{}, nil
+	}
+
+	data, ok := val.([]byte)
+	if !ok {
+		return nil, fmt.Errorf("storage corruption: expected []byte")
+	}
+
+	doc, err := automerge.Load(data)
+	if err != nil {
+		return nil, err
+	}
+
+	changes, err := doc.Changes()
+	if err != nil {
+		return nil, err
+	}
+
+	history := make([]Change, 0, len(changes))
+	for _, c := range changes {
+		history = append(history, Change{
+			Hash:      c.Hash().String(),
+			Message:   c.Message(),
+			Timestamp: c.Timestamp().UnixMicro(),
+		})
+	}
+
+	return history, nil
+}
+
+// Stats returns aggregated metrics from the CRDT engine and underlying store.
+func (e *Engine) Stats() (map[string]interface{}, error) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	storeStats, err := e.store.Stats()
+	if err != nil {
+		return nil, err
+	}
+
+	// We can add engine specific stats here if any (e.g. cache size)
+	return map[string]interface{}{
+		"store": storeStats,
+	}, nil
 }
 
 // ToJSON helper for debugging

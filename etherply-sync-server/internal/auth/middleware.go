@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"strings"
@@ -26,7 +27,7 @@ func Middleware(next http.Handler) http.Handler {
 
 		// Strict Auth: We demand a Bearer token.
 		authHeader := r.Header.Get("Authorization")
-		
+
 		// 1. Check Header
 		var token string
 		if authHeader != "" {
@@ -49,13 +50,49 @@ func Middleware(next http.Handler) http.Handler {
 			return
 		}
 
-		if err := ValidateToken(token); err != nil {
+		claims, err := ValidateToken(token)
+		if err != nil {
 			log.Printf("[AUTH] Rejected request: Invalid token (%v)", err)
 			http.Error(w, "Unauthorized: Invalid token", http.StatusUnauthorized)
 			return
 		}
 
+		// 4. Extract Scopes (Optional)
+		// We add "scopes" to the request context for downstream handlers
+		// "scope" claim is usually space-separated string
+		// Default to empty if missing
+		var scopes []string
+		if scopeStr, ok := claims["scope"].(string); ok {
+			scopes = strings.Split(scopeStr, " ")
+		}
+
+		// Inject into context
+		ctx := r.Context()
+		// We define context keys in a safer way usually, but for now strings.
+		// Wait, context keys should be unexported types.
+		// But handler is in different package.
+		// Let's create a Helper in `auth` to get/set scopes?
+		// Or just pass it?
+		// Ideally `auth.ContextWithScopes`?
+		ctx = NewContextWithScopes(ctx, scopes)
+
 		// Pass execution to the next handler
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+// Context keys
+type contextKey string
+
+const scopeContextKey contextKey = "scopes"
+
+func NewContextWithScopes(ctx context.Context, scopes []string) context.Context {
+	return context.WithValue(ctx, scopeContextKey, scopes)
+}
+
+func ScopesFromContext(ctx context.Context) []string {
+	if scopes, ok := ctx.Value(scopeContextKey).([]string); ok {
+		return scopes
+	}
+	return []string{}
 }

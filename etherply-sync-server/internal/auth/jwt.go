@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	jwtSecret []byte
+	jwtSecret     []byte
 	isAuthEnabled bool
 )
 
@@ -32,15 +32,15 @@ func Init(secret string) {
 	}
 }
 
-// ValidateToken checks if the provided token string is valid signed JWT.
-func ValidateToken(tokenString string) error {
+// ValidateToken checks if the provided token string is valid signed JWT and returns the claims.
+func ValidateToken(tokenString string) (jwt.MapClaims, error) {
 	trimmed := strings.TrimSpace(tokenString)
 	if trimmed == "" {
-		return errors.New("token is empty")
+		return nil, errors.New("token is empty")
 	}
 
 	if !isAuthEnabled {
-		return errors.New("server authentication is not configured (ETHERPLY_JWT_SECRET missing)")
+		return nil, errors.New("server authentication is not configured (ETHERPLY_JWT_SECRET missing)")
 	}
 
 	token, err := jwt.Parse(trimmed, func(token *jwt.Token) (interface{}, error) {
@@ -52,12 +52,16 @@ func ValidateToken(tokenString string) error {
 	})
 
 	if err != nil {
-		return fmt.Errorf("token parse failed: %w", err)
+		return nil, fmt.Errorf("token parse failed: %w", err)
 	}
 
 	if !token.Valid {
-		return errors.New("token signature invalid")
+		return nil, errors.New("token signature invalid")
 	}
 
-	return nil
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		return claims, nil
+	}
+
+	return nil, errors.New("invalid claims structure")
 }

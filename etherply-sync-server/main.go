@@ -8,8 +8,10 @@ import (
 	"github.com/bneb/etherply/etherply-sync-server/internal/auth"
 	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
 	"github.com/bneb/etherply/etherply-sync-server/internal/presence"
+	"github.com/bneb/etherply/etherply-sync-server/internal/pubsub"
 	"github.com/bneb/etherply/etherply-sync-server/internal/server"
 	"github.com/bneb/etherply/etherply-sync-server/internal/store"
+	"github.com/bneb/etherply/etherply-sync-server/internal/webhook"
 )
 
 // main is the entry point for the EtherPly Sync Server.
@@ -58,8 +60,15 @@ func main() {
 	// Initialize Presence Manager (Ephemeral, In-Memory)
 	presenceManager := presence.NewManager()
 
+	// Initialize Pub/Sub Layer (In-Memory for now, replaceable with Redis later)
+	pubsubService := pubsub.NewMemoryPubSub()
+
+	// Initialize Webhook Dispatcher
+	webhookURL := os.Getenv("WEBHOOK_URL")
+	dispatcher := webhook.NewDispatcher(webhookURL)
+
 	// Initialize Server Handler
-	srv := server.NewHandler(crdtEngine, presenceManager)
+	srv := server.NewHandler(crdtEngine, presenceManager, pubsubService, dispatcher)
 
 	// Router
 	mux := http.NewServeMux()
@@ -67,6 +76,8 @@ func main() {
 	// Public Routes
 	mux.HandleFunc("/v1/sync/", srv.HandleWebSocket)       // WS: /v1/sync/{workspace_id}
 	mux.HandleFunc("/v1/presence/", srv.HandleGetPresence) // REST: /v1/presence/{workspace_id}
+	mux.HandleFunc("/v1/stats", srv.HandleGetStats)        // REST: /v1/stats
+	mux.HandleFunc("/v1/history/", srv.HandleGetHistory)   // REST: /v1/history/{workspace_id}
 
 	// Apply Middleware (Logging, Auth, Recovery)
 	handler := auth.Middleware(mux)

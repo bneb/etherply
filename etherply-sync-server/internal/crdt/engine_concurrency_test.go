@@ -66,12 +66,12 @@ func TestEngine_Concurrency(t *testing.T) {
 	wg.Wait()
 
 	// Verification
-	state, err := engine.GetFullState(workspaceID)
+	snapshot, err := engine.GetFullState(workspaceID)
 	if err != nil {
 		t.Fatalf("Failed to fetch final state: %v", err)
 	}
 
-	val, ok := state[key]
+	val, ok := snapshot.Data[key]
 	if !ok {
 		t.Fatal("Expected key to exist")
 	}

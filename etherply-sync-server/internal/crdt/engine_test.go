@@ -40,11 +40,11 @@ func TestLWW_Correctness(t *testing.T) {
 	}
 
 	// Verify state
-	state, err := engine.GetFullState(workspaceID)
+	snapshot, err := engine.GetFullState(workspaceID)
 	if err != nil {
 		t.Fatalf("Failed to get state: %v", err)
 	}
-	if val, ok := state[key]; !ok {
+	if val, ok := snapshot.Data[key]; !ok {
 		t.Errorf("Expected key %s to exist", key)
 	} else if val != "state-1" {
 		t.Errorf("Expected 'state-1', got %v", val)
@@ -61,8 +61,8 @@ func TestLWW_Correctness(t *testing.T) {
 		t.Fatalf("Failed to process newer op: %v", err)
 	}
 
-	state, _ = engine.GetFullState(workspaceID)
-	if val := state[key]; val != "state-2" {
+	snapshot, _ = engine.GetFullState(workspaceID)
+	if val := snapshot.Data[key]; val != "state-2" {
 		t.Errorf("Expected 'state-2' (winner), got %v", val)
 	}
 }

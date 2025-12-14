@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+
 	badger "github.com/dgraph-io/badger/v4"
 )
 
@@ -16,8 +17,8 @@ type BadgerStore struct {
 func NewBadgerStore(path string) (*BadgerStore, error) {
 	opts := badger.DefaultOptions(path)
 	// Reduce logging noise
-	opts.Logger = nil 
-	
+	opts.Logger = nil
+
 	db, err := badger.Open(opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open badger db: %w", err)
@@ -84,7 +85,7 @@ func (s *BadgerStore) GetAll(workspaceID string) (map[string]interface{}, error)
 		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
 			item := it.Item()
 			k := item.Key()
-			
+
 			// Extract original key from composite key "workspace:key"
 			// k is []byte
 			keyStr := string(k)
@@ -114,6 +115,34 @@ func (s *BadgerStore) GetAll(workspaceID string) (map[string]interface{}, error)
 
 func (s *BadgerStore) Close() error {
 	return s.db.Close()
+}
+
+func (s *BadgerStore) Stats() (map[string]interface{}, error) {
+	// For production store, we might not want to iterate all keys.
+	// But `Flatten` or `Size` gives bytes.
+	// Let's implement key count.
+	count := 0
+	err := s.db.View(func(txn *badger.Txn) error {
+		opts := badger.DefaultIteratorOptions
+		opts.PrefetchValues = false
+		it := txn.NewIterator(opts)
+		defer it.Close()
+		for it.Rewind(); it.Valid(); it.Next() {
+			count++
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return map[string]interface{}{
+		"keys": count,
+		// "workspaces": ??? // Hard to count unique workspaces without scanning keys and parsing prefix.
+		// For MVP stats, just total keys is fine or we parse prefix if key count < 1M.
+		// Assume we just return keys for now.
+		// Actually, let's parse prefixes to support "active_workspaces" roughly?
+		// No, that's O(N).
+	}, nil
 }
 
 // Helpers

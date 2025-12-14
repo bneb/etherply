@@ -64,5 +64,20 @@ func (s *MemoryStore) Close() error {
 	return nil
 }
 
+func (s *MemoryStore) Stats() (map[string]interface{}, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	totalKeys := 0
+	for _, ws := range s.data {
+		totalKeys += len(ws)
+	}
+
+	return map[string]interface{}{
+		"workspaces": len(s.data),
+		"keys":       totalKeys,
+	}, nil
+}
+
 // Ensure interface satisfaction
 var _ Store = (*MemoryStore)(nil)

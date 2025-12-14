@@ -15,4 +15,7 @@ type Store interface {
 
 	// Close cleans up resources.
 	Close() error
+
+	// Stats returns storage metrics (e.g., number of keys/workspaces).
+	Stats() (map[string]interface{}, error)
 }

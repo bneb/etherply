@@ -8,16 +8,28 @@ import (
 
 	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
 	"github.com/bneb/etherply/etherply-sync-server/internal/presence"
+	"github.com/bneb/etherply/etherply-sync-server/internal/pubsub"
 	"github.com/bneb/etherply/etherply-sync-server/internal/server"
 	"github.com/bneb/etherply/etherply-sync-server/internal/store"
+	"github.com/bneb/etherply/etherply-sync-server/internal/webhook"
 )
 
-// createTestHandler creates a Handler with in-memory store for testing.
-func createTestHandler() *server.Handler {
+// createTestHandlerWithComponents creates a Handler and returns components for detailed testing.
+func createTestHandlerWithComponents() (*crdt.Engine, *presence.Manager, *server.Handler) {
 	memStore := store.NewMemoryStore()
 	engine := crdt.NewEngine(memStore)
 	presenceManager := presence.NewManager()
-	return server.NewHandler(engine, presenceManager)
+	pubsubService := pubsub.NewMemoryPubSub()
+	// Disable webhooks in test by default (empty URL)
+	dispatcher := webhook.NewDispatcher("")
+	handler := server.NewHandler(engine, presenceManager, pubsubService, dispatcher)
+	return engine, presenceManager, handler
+}
+
+// createTestHandler creates a Handler with in-memory store for testing.
+func createTestHandler() *server.Handler {
+	_, _, h := createTestHandlerWithComponents()
+	return h
 }
 
 func TestHandleGetPresence_EmptyWorkspace(t *testing.T) {

@@ -34,17 +34,11 @@ func TestClient_Close_NilConnection(t *testing.T) {
 func TestClient_SendOperation_NotConnected(t *testing.T) {
 	client := etherply.NewClient("ws://localhost:8080", "test-token")
 
-	// SendOperation on nil connection should return an error (not panic)
-	// This tests defensive coding: "The Happy Path is a Trap"
+	// SendOperation on nil connection should return nil (queued for offline support)
+	// This verifies the "Offline Support" feature.
 	err := client.SendOperation("key", "value")
-	if err == nil {
-		t.Error("Expected error when calling SendOperation without established connection")
-	}
-
-	// Verify error message is informative
-	expected := "connection not established"
-	if err != nil && !contains(err.Error(), expected) {
-		t.Errorf("Expected error containing '%s', got: %v", expected, err)
+	if err != nil {
+		t.Errorf("Expected nil error (queued) when calling SendOperation without connection, got: %v", err)
 	}
 }
 
