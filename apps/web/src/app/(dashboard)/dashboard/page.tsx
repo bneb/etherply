@@ -1,11 +1,10 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ProjectService, type Project } from '@/lib/mocks';
+import { api, type Project } from '@/lib/api.client';
 import { Plus, Server, Activity, Globe, Wifi } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
@@ -14,24 +13,36 @@ export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [newProjectName, setNewProjectName] = useState('');
     const [creating, setCreating] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         loadProjects();
     }, []);
 
     const loadProjects = async () => {
-        const data = await ProjectService.listProjects('org_1');
-        setProjects(data);
-        setLoading(false);
+        try {
+            const data = await api.listProjects();
+            setProjects(data);
+        } catch (e) {
+            console.error(e);
+            setError("Failed to load projects. Ensure backend is running.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCreate = async () => {
         if (!newProjectName) return;
         setCreating(true);
-        await ProjectService.createProject(newProjectName, 'us-east-1');
-        setNewProjectName('');
-        await loadProjects();
-        setCreating(false);
+        try {
+            await api.createProject(newProjectName, 'us-east-1');
+            setNewProjectName('');
+            await loadProjects();
+        } catch (e) {
+            setError("Failed to create project.");
+        } finally {
+            setCreating(false);
+        }
     };
 
     return (
@@ -50,10 +61,16 @@ export default function DashboardPage() {
                     />
                     <Button onClick={handleCreate} disabled={creating || !newProjectName} className="bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)]">
                         <Plus className="h-4 w-4 mr-2" />
-                        Create
+                        {creating ? 'Creating...' : 'Create'}
                     </Button>
                 </div>
             </div>
+
+            {error && (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-md">
+                    {error}
+                </div>
+            )}
 
             {loading ? (
                 <div className="text-zinc-500 flex items-center gap-2">
@@ -70,11 +87,11 @@ export default function DashboardPage() {
                                         {project.name}
                                     </CardTitle>
                                     <div className="flex items-center gap-2 mt-2">
-                                        <Badge variant="neutral" className="text-[10px] px-1.5 py-0 h-5 font-normal tracking-wide uppercase bg-white/5 text-zinc-500 border border-white/5">
+                                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5 font-normal tracking-wide uppercase bg-white/5 text-zinc-500 border border-white/5">
                                             {project.region}
                                         </Badge>
-                                        <Badge variant={project.status === 'healthy' ? 'live' : 'destructive'} className="text-[10px] px-1.5 py-0 h-5 font-normal tracking-wide uppercase border border-white/5">
-                                            {project.status === 'healthy' ? 'Healthy' : 'Draining'}
+                                        <Badge variant="default" className="text-[10px] px-1.5 py-0 h-5 font-normal tracking-wide uppercase border border-white/5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20">
+                                            Healthy
                                         </Badge>
                                     </div>
                                 </div>
@@ -84,7 +101,7 @@ export default function DashboardPage() {
                             </CardHeader>
                             <CardContent className="mt-4">
                                 <div className="flex items-end gap-2">
-                                    <span className="text-3xl font-bold text-white tracking-tight">{project.activeConnections.toLocaleString()}</span>
+                                    <span className="text-3xl font-bold text-white tracking-tight">0</span>
                                     <span className="text-sm text-zinc-500 mb-1.5">active conns</span>
                                 </div>
                             </CardContent>

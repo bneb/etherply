@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
+	"github.com/bneb/etherply/etherply-sync-server/internal/metering"
 	"github.com/bneb/etherply/etherply-sync-server/internal/presence"
 	"github.com/bneb/etherply/etherply-sync-server/internal/pubsub"
 	"github.com/bneb/etherply/etherply-sync-server/internal/server"
@@ -22,8 +24,18 @@ func createTestHandlerWithComponents() (*crdt.Engine, *presence.Manager, *server
 	pubsubService := pubsub.NewMemoryPubSub()
 	// Disable webhooks in test by default (empty URL)
 	dispatcher := webhook.NewDispatcher("")
-	handler := server.NewHandler(engine, presenceManager, pubsubService, dispatcher)
+	handler := server.NewHandler(engine, presenceManager, pubsubService, dispatcher, nil, &MockMeteringService{})
 	return engine, presenceManager, handler
+}
+
+type MockMeteringService struct{}
+
+func (m *MockMeteringService) Record(workspaceID string, metric metering.MetricType, delta int64) error {
+	return nil
+}
+
+func (m *MockMeteringService) GetUsage(workspaceID string, metric metering.MetricType, start, end time.Time) (int64, error) {
+	return 0, nil
 }
 
 // createTestHandler creates a Handler with in-memory store for testing.

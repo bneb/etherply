@@ -12,6 +12,7 @@ import (
 	"github.com/bneb/etherply/etherply-sync-server/internal/auth"
 	"github.com/bneb/etherply/etherply-sync-server/internal/config"
 	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
+	"github.com/bneb/etherply/etherply-sync-server/internal/metering"
 	"github.com/bneb/etherply/etherply-sync-server/internal/middleware"
 	"github.com/bneb/etherply/etherply-sync-server/internal/presence"
 	"github.com/bneb/etherply/etherply-sync-server/internal/pubsub"
@@ -19,6 +20,7 @@ import (
 	"github.com/bneb/etherply/etherply-sync-server/internal/server"
 	"github.com/bneb/etherply/etherply-sync-server/internal/store"
 	"github.com/bneb/etherply/etherply-sync-server/internal/sync"
+	"github.com/bneb/etherply/etherply-sync-server/internal/telemetry"
 	"github.com/bneb/etherply/etherply-sync-server/internal/webhook"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -114,9 +116,10 @@ func main() {
 	presenceManager := presence.NewManager()
 	pubsubService := pubsub.NewMemoryPubSub()
 	dispatcher := webhook.NewDispatcher(cfg.WebhookURL)
+	meteringService := metering.NewBadgerMeteringService(stateStore)
 
 	// Initialize Handlers
-	srv := server.NewHandler(crdtEngine, presenceManager, pubsubService, dispatcher)
+	srv := server.NewHandler(crdtEngine, presenceManager, pubsubService, dispatcher, stateStore, meteringService)
 	healthChecker := server.NewHealthChecker(stateStore)
 
 	// Router
@@ -127,6 +130,19 @@ func main() {
 	mux.HandleFunc("/healthz", healthChecker.HandleHealthz)
 	mux.HandleFunc("/readyz", healthChecker.HandleReadyz)
 
+	// Control Plane Routes (New)
+	mux.HandleFunc("/v1/projects", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			srv.HandleListProjects(w, r)
+		} else if r.Method == http.MethodPost {
+			srv.HandleCreateProject(w, r)
+		} else {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+	mux.HandleFunc("/v1/billing/plans", srv.HandleGetPlans)
+	mux.HandleFunc("/v1/usage/", srv.HandleGetUsage)
+
 	// API Routes
 	mux.HandleFunc("/v1/sync/", srv.HandleWebSocket)
 	mux.HandleFunc("/v1/presence/", srv.HandleGetPresence)
@@ -136,9 +152,11 @@ func main() {
 	// Metrics Endpoint (P0 Enterprise Feature)
 	mux.Handle("/metrics", promhttp.Handler())
 
-	// Apply Middleware: RateLimiter -> Auth
+	// Apply Middleware: RateLimiter -> Auth -> Telemetry
 	// Order matters: Rate limit before expensive auth/logic.
-	finalHandler := middleware.RateLimit(auth.Middleware(mux))
+	// Telemetry should be outermost to capture everything.
+	telemetryHandler := telemetry.Middleware(mux, logger)
+	finalHandler := middleware.RateLimit(auth.Middleware(telemetryHandler))
 
 	// Create HTTP server
 	httpServer := &http.Server{

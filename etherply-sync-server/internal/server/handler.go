@@ -18,9 +18,11 @@ import (
 
 	"github.com/bneb/etherply/etherply-sync-server/internal/auth"
 	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
+	"github.com/bneb/etherply/etherply-sync-server/internal/metering"
 	"github.com/bneb/etherply/etherply-sync-server/internal/metrics"
 	"github.com/bneb/etherply/etherply-sync-server/internal/presence"
 	"github.com/bneb/etherply/etherply-sync-server/internal/pubsub"
+	"github.com/bneb/etherply/etherply-sync-server/internal/store"
 	"github.com/bneb/etherply/etherply-sync-server/internal/webhook"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -48,10 +50,12 @@ type Handler struct {
 	presenceManager *presence.Manager
 	pubsub          pubsub.PubSub
 	webhook         *webhook.Dispatcher
+	store           store.Store
+	metering        metering.Service
 	logger          *slog.Logger
 }
 
-func NewHandler(e *crdt.Engine, p *presence.Manager, ps pubsub.PubSub, wh *webhook.Dispatcher) *Handler {
+func NewHandler(e *crdt.Engine, p *presence.Manager, ps pubsub.PubSub, wh *webhook.Dispatcher, s store.Store, m metering.Service) *Handler {
 	// Default to JSON handler for structured output, writing to stderr
 	logger := slog.New(slog.NewJSONHandler(os.Stderr, nil))
 	return &Handler{
@@ -59,6 +63,8 @@ func NewHandler(e *crdt.Engine, p *presence.Manager, ps pubsub.PubSub, wh *webho
 		presenceManager: p,
 		pubsub:          ps,
 		webhook:         wh,
+		store:           s,
+		metering:        m,
 		logger:          logger,
 	}
 }
@@ -121,6 +127,52 @@ func (h *Handler) HandleGetHistory(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(history)
+}
+
+// HandleGetUsage returns usage metrics for billing.
+func (h *Handler) HandleGetUsage(w http.ResponseWriter, r *http.Request) {
+	// Path: /v1/usage/{workspace_id}?start=YYYY-MM-DD&end=YYYY-MM-DD
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 4 {
+		http.Error(w, "Invalid path", http.StatusBadRequest)
+		return
+	}
+	workspaceID := parts[3]
+
+	// Parse query params (default to current month)
+	startStr := r.URL.Query().Get("start")
+	endStr := r.URL.Query().Get("end")
+
+	start := time.Now().AddDate(0, 0, -30) // Default 30d
+	end := time.Now()
+
+	if startStr != "" {
+		if t, err := time.Parse("2006-01-02", startStr); err == nil {
+			start = t
+		}
+	}
+	if endStr != "" {
+		if t, err := time.Parse("2006-01-02", endStr); err == nil {
+			end = t
+		}
+	}
+
+	msgSent, _ := h.metering.GetUsage(workspaceID, metering.MetricMessagesSent, start, end)
+	msgRecv, _ := h.metering.GetUsage(workspaceID, metering.MetricMessagesReceived, start, end)
+
+	resp := map[string]interface{}{
+		"workspace_id": workspaceID,
+		"start":        start.Format("2006-01-02"),
+		"end":          end.Format("2006-01-02"),
+		"usage": map[string]int64{
+			"messages_sent":     msgSent,
+			"messages_received": msgRecv,
+			"total_messages":    msgSent + msgRecv,
+		},
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }
 
 func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
@@ -219,6 +271,8 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 				return // Stop writer if write fails
 			}
 			metrics.MessagesBroadcast.Inc()
+			// Metering: Outbound traffic
+			h.metering.Record(workspaceID, metering.MetricMessagesSent, 1)
 		}
 	}()
 
@@ -243,6 +297,8 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		metrics.MessagesReceived.Inc()
+		// Metering: Inbound traffic
+		h.metering.Record(workspaceID, metering.MetricMessagesReceived, 1)
 
 		// Handle "ping" or "op"
 		msgType, _ := rawMsg["type"].(string)
