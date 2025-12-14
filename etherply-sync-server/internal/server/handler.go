@@ -14,8 +14,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/bneb/etherply/etherply-sync-server/internal/auth"
 	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
+	"github.com/bneb/etherply/etherply-sync-server/internal/metrics"
 	"github.com/bneb/etherply/etherply-sync-server/internal/presence"
 	"github.com/bneb/etherply/etherply-sync-server/internal/pubsub"
 	"github.com/bneb/etherply/etherply-sync-server/internal/webhook"
@@ -163,6 +166,8 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 		"session_id":   sessionID,
 	})
 
+	metrics.ConnectedClients.Inc()
+
 	h.logger.Info("concurrent_connection_peak",
 		slog.String("event", "metric"),
 		slog.String("workspace_id", workspaceID),
@@ -172,6 +177,7 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	// Clean up on exit
 	defer func() {
+		metrics.ConnectedClients.Dec()
 		unsub()
 		h.presenceManager.RemoveUser(workspaceID, userID)
 		// Webhook: client.disconnected (includes session_id)
@@ -212,6 +218,7 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				return // Stop writer if write fails
 			}
+			metrics.MessagesBroadcast.Inc()
 		}
 	}()
 
@@ -235,6 +242,7 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 		if err := conn.ReadJSON(&rawMsg); err != nil {
 			break
 		}
+		metrics.MessagesReceived.Inc()
 
 		// Handle "ping" or "op"
 		msgType, _ := rawMsg["type"].(string)
@@ -271,7 +279,10 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 
+			timer := prometheus.NewTimer(metrics.OperationDuration)
 			err := h.crdtEngine.ProcessOperation(op)
+			timer.ObserveDuration()
+
 			if err != nil {
 				h.logger.Error("op_processing_failed", slog.Any("error", err))
 				continue

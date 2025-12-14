@@ -18,6 +18,7 @@ import (
 	"github.com/bneb/etherply/etherply-sync-server/internal/store"
 	"github.com/bneb/etherply/etherply-sync-server/internal/sync"
 	"github.com/bneb/etherply/etherply-sync-server/internal/webhook"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // main is the entry point for the EtherPly Sync Server.
@@ -119,6 +120,9 @@ func main() {
 	mux.HandleFunc("/v1/presence/", srv.HandleGetPresence)
 	mux.HandleFunc("/v1/stats", srv.HandleGetStats)
 	mux.HandleFunc("/v1/history/", srv.HandleGetHistory)
+
+	// Metrics Endpoint (P0 Enterprise Feature)
+	mux.Handle("/metrics", promhttp.Handler())
 
 	// Apply Middleware
 	handler := auth.Middleware(mux)
