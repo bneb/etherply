@@ -11,6 +11,7 @@ To eliminate the "diffusion of responsibility." Every component has a Direct Res
 | **SDK** | `pkg/go-sdk/` | Kevin | 🔴 High |
 | **Frontend/Demo** | `examples/demo/` | Kevin | 🟡 Medium |
 | **Documentation** | `docs/` | Kevin | 🟢 Low |
+| **Design System** | `packages/ui` / `styles` | **OPEN** | 🔴 **CRITICAL** (Tragedy of the Commons) |
 
 ## Escalation Protocols
 

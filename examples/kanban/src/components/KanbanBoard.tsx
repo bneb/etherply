@@ -12,7 +12,7 @@ import {
     DragEndEvent,
 } from '@dnd-kit/core';
 import { useDocument, useEtherPlyContext } from '@etherply/sdk/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { BoardState, INITIAL_BOARD } from '../types/kanban';
 import { Column } from './Column';
 import { Card } from './Card';
@@ -42,12 +42,30 @@ export function KanbanBoard() {
         })
     );
 
-    const activeTask = activeId && board?.tasks[activeId] ? board.tasks[activeId] : null;
+    const activeTask = useMemo(() =>
+        activeId && board?.tasks[activeId] ? board.tasks[activeId] : null
+        , [activeId, board?.tasks]);
+
+    // ... inside component ...
+
+    const tasksToColumns = useMemo(() => {
+        const map = new Map<string, string>();
+        if (!board) return map;
+        for (const column of board.columns) {
+            for (const taskId of column.taskIds) {
+                map.set(taskId, column.id);
+            }
+        }
+        return map;
+    }, [board]);
 
     function findColumn(id: string) {
         if (!board) return null;
-        return board.columns.find((col) => col.taskIds.includes(id))?.id ||
-            board.columns.find((col) => col.id === id)?.id;
+        if (tasksToColumns.has(id)) {
+            return tasksToColumns.get(id);
+        }
+        // Fallback: Check if the ID itself is a column ID
+        return board.columns.find((col) => col.id === id)?.id || null;
     }
 
     function handleDragStart(event: DragStartEvent) {
@@ -160,8 +178,8 @@ export function KanbanBoard() {
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
         >
-            <div className="flex justify-center p-8">
-                <div className="flex gap-6 h-[80vh]">
+            <div className="flex justify-start md:justify-center p-2 md:p-8 overflow-x-auto snap-x snap-mandatory">
+                <div className="flex gap-4 md:gap-6 h-[80vh] min-w-full px-4 md:px-0">
                     {board.columns.map((col) => (
                         <Column
                             key={col.id}

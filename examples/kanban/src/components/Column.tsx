@@ -16,7 +16,7 @@ export function Column({ column, tasks }: ColumnProps) {
     });
 
     return (
-        <div className="flex flex-col w-80 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 h-full max-h-full">
+        <div className="flex flex-col w-[85vw] md:w-80 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 h-full max-h-full snap-center shrink-0">
             <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
                 <h3 className="font-semibold text-gray-700 dark:text-gray-200">
                     {column.title}

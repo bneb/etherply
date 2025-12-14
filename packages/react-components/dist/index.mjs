@@ -1,3 +1,9 @@
+var __defProp = Object.defineProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+
 // src/components/LiveCursors.tsx
 import { useEffect, useRef, useState } from "react";
 import { useEtherPlyContext } from "@etherply/sdk/react";
@@ -131,7 +137,94 @@ function LiveCursors({ renderCursor, throttleMs = 33, timeoutMs = 3e4 }) {
     cursor.id
   )) });
 }
+
+// src/components/Button/Button.tsx
+import React from "react";
+import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+var Button = React.forwardRef(
+  ({ className = "", variant = "primary", size = "md", isLoading, children, ...props }, ref) => {
+    const baseStyles = "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+    const variants = {
+      primary: "bg-[#0094c6] text-white hover:bg-[#005e7c]",
+      secondary: "bg-[#001242] text-white hover:bg-[#000022]",
+      ghost: "hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-50",
+      destructive: "bg-red-500 text-white hover:bg-red-600"
+    };
+    const sizes = {
+      sm: "h-8 px-3 text-xs",
+      md: "h-10 px-4 py-2 text-sm",
+      lg: "h-12 px-8 text-md"
+    };
+    const rounded = "rounded-md";
+    const combinedClassName = `
+      ${baseStyles} 
+      ${variants[variant]} 
+      ${sizes[size]} 
+      ${rounded} 
+      ${className}
+    `.trim().replace(/\s+/g, " ");
+    return /* @__PURE__ */ jsxs2(
+      "button",
+      {
+        ref,
+        className: combinedClassName,
+        disabled: isLoading || props.disabled,
+        ...props,
+        children: [
+          isLoading && /* @__PURE__ */ jsxs2("svg", { className: "animate-spin -ml-1 mr-2 h-4 w-4 text-current", xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", children: [
+            /* @__PURE__ */ jsx3("circle", { className: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "4" }),
+            /* @__PURE__ */ jsx3("path", { className: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })
+          ] }),
+          children
+        ]
+      }
+    );
+  }
+);
+Button.displayName = "Button";
+
+// src/tokens/colors.ts
+var colors_exports = {};
+__export(colors_exports, {
+  colors: () => colors
+});
+var colors = {
+  primary: {
+    DEFAULT: "#0094c6",
+    // Ocean Blue
+    hover: "#005e7c",
+    // Baltic Blue
+    foreground: "#ffffff"
+  },
+  secondary: {
+    DEFAULT: "#001242",
+    // Deep Navy
+    hover: "#000022",
+    // Prussian Blue
+    foreground: "#ffffff"
+  },
+  destructive: {
+    DEFAULT: "#ef4444",
+    hover: "#dc2626",
+    foreground: "#ffffff"
+  },
+  surface: {
+    DEFAULT: "#ffffff",
+    subtle: "#f3f4f6",
+    // gray-100
+    dark: "#1f2937"
+    // gray-800
+  },
+  border: {
+    DEFAULT: "#e5e7eb",
+    // gray-200
+    dark: "#374151"
+    // gray-700
+  }
+};
 export {
+  Button,
   DefaultCursor,
-  LiveCursors
+  LiveCursors,
+  colors_exports as tokens
 };

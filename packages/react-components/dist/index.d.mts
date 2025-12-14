@@ -1,4 +1,5 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
+import React$1 from 'react';
 
 interface LiveCursorsProps {
     /**
@@ -30,4 +31,43 @@ interface CursorProps {
 }
 declare function DefaultCursor({ color, x, y, label }: CursorProps): react_jsx_runtime.JSX.Element;
 
-export { type CursorProps, DefaultCursor, LiveCursors, type LiveCursorsProps };
+interface ButtonProps extends React$1.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: 'primary' | 'secondary' | 'ghost' | 'destructive';
+    size?: 'sm' | 'md' | 'lg';
+    isLoading?: boolean;
+}
+declare const Button: React$1.ForwardRefExoticComponent<ButtonProps & React$1.RefAttributes<HTMLButtonElement>>;
+
+declare const colors: {
+    readonly primary: {
+        readonly DEFAULT: "#0094c6";
+        readonly hover: "#005e7c";
+        readonly foreground: "#ffffff";
+    };
+    readonly secondary: {
+        readonly DEFAULT: "#001242";
+        readonly hover: "#000022";
+        readonly foreground: "#ffffff";
+    };
+    readonly destructive: {
+        readonly DEFAULT: "#ef4444";
+        readonly hover: "#dc2626";
+        readonly foreground: "#ffffff";
+    };
+    readonly surface: {
+        readonly DEFAULT: "#ffffff";
+        readonly subtle: "#f3f4f6";
+        readonly dark: "#1f2937";
+    };
+    readonly border: {
+        readonly DEFAULT: "#e5e7eb";
+        readonly dark: "#374151";
+    };
+};
+
+declare const colors$1_colors: typeof colors;
+declare namespace colors$1 {
+  export { colors$1_colors as colors };
+}
+
+export { Button, type CursorProps, DefaultCursor, LiveCursors, type LiveCursorsProps, colors$1 as tokens };

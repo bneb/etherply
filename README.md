@@ -3,6 +3,16 @@
 
 EtherPly is a managed state synchronization engine that turns static apps into collaborative, real-time platforms. It provides a conflict-free, persistent, and scalable backend for real-time applications.
 
+## 📜 Governance & Standards (The "Constitution")
+We operate as a high-discipline engineering team. Read the protocols before contributing.
+
+*   [**Operating Principles**](OPERATING_PRINCIPLES.md): How we make decisions (Technocratic Efficiency).
+*   [**Governance & Ownership**](GOVERNANCE.md): Who owns what (DRI Registry).
+*   [**RFC Process**](RFC_TEMPLATE.md): How to propose architectural changes.
+
+## 🤝 Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the "Smart Nation" standard.
+
 ## Repository Structure
 
 | Directory | Component | Description |
