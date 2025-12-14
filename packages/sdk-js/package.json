@@ -1,0 +1,71 @@
+{
+    "name": "@etherply/sdk",
+    "version": "0.1.0",
+    "description": "Official JavaScript/TypeScript SDK for EtherPly - Real-time sync infrastructure",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        },
+        "./react": {
+            "types": "./dist/react/index.d.ts",
+            "import": "./dist/react/index.mjs",
+            "require": "./dist/react/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "lint": "eslint src --ext .ts,.tsx",
+        "typecheck": "tsc --noEmit",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "etherply",
+        "realtime",
+        "sync",
+        "crdt",
+        "collaborative",
+        "multiplayer",
+        "websocket",
+        "react"
+    ],
+    "author": "EtherPly Team",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bneb/etherply.git",
+        "directory": "packages/sdk-js"
+    },
+    "homepage": "https://etherply.com",
+    "bugs": {
+        "url": "https://github.com/bneb/etherply/issues"
+    },
+    "peerDependencies": {
+        "react": ">=17.0.0"
+    },
+    "peerDependenciesMeta": {
+        "react": {
+            "optional": true
+        }
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "@types/react": "^18.2.0",
+        "eslint": "^8.55.0",
+        "react": "^18.2.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.3.0",
+        "vitest": "^1.0.0"
+    }
+}

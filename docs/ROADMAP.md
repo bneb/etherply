@@ -1,11 +1,13 @@
 # EtherPly Product Roadmap
 
-**Last Updated:** 2025-12-13  
-**Status:** ✅ COMPLETE - All phases delivered  
-**Focus:** Reliability, Correctness, and Scalability ("Operation Ironclad")
+**Last Updated:** 2025-12-14  
+**Status:** 🚀 Q4 2026 - "Operation Stripe" (Developer Experience)  
+**Focus:** SDK, Documentation, Customer Validation
 
 > [!NOTE]
-> **Roadmap Complete:** Following the successful "Operation Ironclad" rebuild, all Q1-Q3 2026 milestones have been achieved. The platform now features Automerge CRDT synchronization, BadgerDB persistence, Multi-Region Replication via NATS JetStream, and On-Premise deployment options.
+> **Infrastructure Complete.** Q1-Q3 2026 ("Operation Ironclad") delivered production-grade infrastructure: Automerge CRDT, BadgerDB persistence, NATS replication, and on-premise options.
+>
+> **Now: Go-To-Market.** Q4 2026 ("Operation Stripe") focuses on developer experience—the Stripe playbook. Ship the npm SDK, world-class docs, and get our first 10 paying customers.
 
 ---
 
@@ -58,3 +60,78 @@
 - [x] **SLA Guarantees**
 - [x] **Multi-Region Replication**
 - [x] **On-Premise Deployment options**
+
+---
+
+## Q4 2026: Operation Stripe (The "Developer Experience" Push)
+**Goal:** Best-in-class Developer Experience. Win on DX, not features.  
+**Success Metric:** 50 production apps using EtherPly. 10 paying customers on Startup tier.  
+**Philosophy:** Stripe didn't beat PayPal with better technology—they beat them with 7 lines of code, world-class docs, and obsessive developer empathy.
+
+> [!IMPORTANT]
+> This phase directly addresses the [Commercial Due Diligence](file:///Users/kevin/.gemini/antigravity/brain/ff41f41a-b3cd-4e9f-96a3-0541e171a50f/commercial_due_diligence_report.md.resolved) feedback: "No JS SDK = no market" and "Get 3 paying customers."
+
+### 1. SDK & Distribution (Priority: CRITICAL)
+*Current State:* Go SDK only. TypeScript client exists but is not published.  
+*Target State:* `npm install @etherply/sdk` works out of the box.
+
+- [ ] **Publish `@etherply/sdk`:** Extract, package, and publish TypeScript SDK to npm
+- [ ] **TypeScript Types:** Ship with 100% type coverage and JSDoc
+- [ ] **React Hooks:** `useEtherPly()`, `usePresence()`, `useDocument()` 
+- [ ] **Framework Examples:** Next.js 14, Remix, SvelteKit, Vue 3
+
+### 2. Documentation Excellence (Priority: CRITICAL)
+*Current State:* Markdown files in `/docs`. No interactive docs site.  
+*Target State:* `docs.etherply.com` - Stripe/Tailwind quality.
+
+- [ ] **Documentation Site:** Docusaurus or Mintlify hosted site
+- [ ] **Interactive Quick Start:** 5-minute guided setup
+- [ ] **API Reference:** Auto-generated from code with examples
+- [ ] **Concepts Guide:** CRDT, LWW, sync strategies explained visually
+- [ ] **Troubleshooting Guide:** Common errors + solutions
+- [ ] **"5 Minute Quickstart" Video:** YouTube + landing page embed
+
+### 3. Example Applications (Priority: HIGH)
+*Current State:* 1 demo app (collaborative editor).  
+*Target State:* 10+ production-grade, copy-paste examples.
+
+- [ ] **Collaborative Text Editor** (current demo, polish)
+- [ ] **Real-time Kanban Board**
+- [ ] **Multiplayer Cursor Sharing** (Figma-style)
+- [ ] **Live Poll/Voting App**
+- [ ] **Collaborative Whiteboard**
+- [ ] **Real-time Form Builder**
+- [ ] **Chat Room with Presence**
+- [ ] **Turn-based Game State** (Tic-Tac-Toe)
+- [ ] **Inventory Sync** (e-commerce)
+- [ ] **IoT Device Dashboard**
+
+### 4. Customer Validation (Priority: CRITICAL)
+*Current State:* Zero paying customers. Zero case studies.  
+*Target State:* 3+ production apps, 3+ testimonials.
+
+- [ ] **Beta Signup Page:** Collect emails, create waitlist
+- [ ] **Onboard First 3 Beta Users:** Hands-on support
+- [ ] **Case Study #1:** Written testimonial + logo for site
+- [ ] **Case Study #2:** Video testimonial
+- [ ] **Case Study #3:** Technical deep-dive blog post
+- [ ] **Unit Economics Spreadsheet:** CAC, LTV, margin analysis
+
+### 5. Observability & Ops (Priority: HIGH)
+*Current State:* No metrics, basic logging.  
+*Target State:* Production observability.
+
+- [ ] **Prometheus `/metrics` Endpoint:** `etherply_connections_active`, `etherply_operations_total`, `etherply_sync_latency_ms`
+- [ ] **Structured Logging:** Migrate from `log` to `slog`
+- [ ] **Rate Limiting:** Token bucket per-client to prevent abuse
+- [ ] **Health Check Endpoint:** `/health` and `/ready` for K8s probes
+- [ ] **Grafana Dashboard Template:** Ready-to-import JSON
+
+### 6. Pricing & Monetization
+*Current State:* $29/mo (underpriced per DD report).  
+*Target State:* Value-based pricing aligned with market.
+
+- [ ] **Update Startup Tier:** $29 → **$49/mo**
+- [ ] **Add Enterprise Anchor:** "Starting at $499/mo"
+- [ ] **Usage-Based Add-On:** $0.001/operation for high-volume users
+- [ ] **Stripe Integration:** Self-serve checkout
