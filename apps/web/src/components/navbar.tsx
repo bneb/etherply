@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Github } from 'lucide-react';
 
 export function Navbar() {
     return (
@@ -23,20 +22,14 @@ export function Navbar() {
                         <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <Link href="https://github.com/bneb/etherply" target="_blank">
-                            <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
-                                <Github className="h-5 w-5" />
-                            </Button>
-                        </Link>
-                        <Link href="/login">
-                            <Button variant="glass" className="font-semibold">
-                                Console
-                            </Button>
-                        </Link>
-                    </div>
+                    <Link href="/login">
+                        <Button variant="glass" className="font-semibold">
+                            Console
+                        </Button>
+                    </Link>
                 </div>
             </div>
-        </nav>
+
+        </nav >
     );
 }
