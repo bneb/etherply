@@ -34,7 +34,7 @@ You have built a robust *technical* product that solves a hard problem (scaling 
 I had my team (me) look at the internals.
 
 ### Scalability (Moat Potential: High)
-Using **NATS JetStream** for replication (`internal/replication/nats.go`) was a brilliant choice. It gives you multi-region "for free" compared to rolling your own Redis pub/sub mesh. This is defensible because it allows you to promise <100ms latency globally, which Firebase cannot do easily.
+Using **NATS JetStream** for replication (`internal/replication/nats.go`) was a brilliant choice. It gives you multi-region "for free" compared to rolling your own Redis pub/sub mesh. This is defensible because it allows you to promise &lt;100ms latency globally, which Firebase cannot do easily.
 
 ### Conflict Resolution (Moat Potential: Medium)
 The `crdt` engine wrapping **Automerge** (`internal/crdt/engine.go`) allows you to draft off the industry standard. You didn't invent the algo, which is smart (less risk), but it means your IP is thin here.

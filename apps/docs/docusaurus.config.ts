@@ -8,7 +8,7 @@ const config: Config = {
   favicon: 'img/favicon.svg',
 
   url: 'https://docs.etherply.com',
-  baseUrl: '/',
+  baseUrl: '/docs/',
 
   organizationName: 'bneb',
   projectName: 'etherply',
@@ -62,48 +62,15 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          to: '/docs/api/sdk',
+          to: '/docs/api/http-api', // Pointing to HTTP API first since SDK is a dir
           label: 'API Reference',
           position: 'left',
-        },
-        { to: '/blog', label: 'Blog', position: 'right' },
-        {
-          href: 'https://github.com/bneb/etherply',
-          label: 'GitHub',
-          position: 'right',
         },
       ],
     },
     footer: {
       style: 'dark',
-      links: [
-        {
-          title: 'Docs',
-          items: [
-            {
-              label: 'Quick Start',
-              to: '/docs/intro',
-            },
-            {
-              label: 'Architecture',
-              to: '/docs/concepts/architecture',
-            },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/bneb/etherply',
-            },
-            {
-              label: 'Twitter',
-              href: 'https://twitter.com/etherply',
-            },
-          ],
-        },
-      ],
+      links: [],
       copyright: `Copyright © ${new Date().getFullYear()} EtherPly. Built for the future of collaboration.`,
     },
     prism: {

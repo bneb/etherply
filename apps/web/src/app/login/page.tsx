@@ -41,8 +41,10 @@ export default function LoginPage() {
 
             <Card className="w-full max-w-md bg-black/40 backdrop-blur-xl border-white/5 shadow-2xl relative z-10">
                 <CardHeader className="text-center pb-8">
-                    <div className="mx-auto mb-6 bg-blue-600/10 p-3 rounded-xl ring-1 ring-blue-500/20 w-fit">
-                        <Image src="/logo.svg" alt="EtherPly Logo" width={24} height={24} className="h-6 w-6" />
+                    <div className="mx-auto mb-6 bg-blue-600/10 p-3 rounded-xl ring-1 ring-blue-500/20 w-fit cursor-pointer hover:bg-blue-600/20 transition-colors">
+                        <Link href="/">
+                            <Image src="/logo.svg" alt="EtherPly Logo" width={24} height={24} className="h-6 w-6" />
+                        </Link>
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight text-white">Welcome Back</CardTitle>
                     <CardDescription className="text-zinc-500">Enter your email to sign in to the console.</CardDescription>
