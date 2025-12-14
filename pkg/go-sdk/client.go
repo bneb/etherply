@@ -38,6 +38,9 @@ func NewClient(baseURL, token string) *Client {
 // It performs the handshake and authentication.
 // Returns an error if the server is unreachable or the token is invalid (401).
 func (c *Client) Connect(workspaceID string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	// Construct URL
 	// Query params are used for auth during WS handshake.
 	url := c.BaseURL + "/v1/sync/" + workspaceID + "?token=" + c.Token

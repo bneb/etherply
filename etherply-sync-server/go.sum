@@ -1,3 +1,5 @@
+github.com/automerge/automerge-go v0.0.0-20241030180337-6fb4f2d08244 h1:zzw/8zTEZKROqQe9HzRyEin/ylr96Yy5th6Ej4Mxp20=
+github.com/automerge/automerge-go v0.0.0-20241030180337-6fb4f2d08244/go.mod h1:6UxoDE+thWsISXK93pxaOuOfkcAfCvDbg0eAnFmxL5E=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/dgraph-io/badger/v4 v4.8.0 h1:JYph1ChBijCw8SLeybvPINizbDKWZ5n/GYbz2yhN/bs=

@@ -36,7 +36,7 @@ The system uses "Last-Write-Wins" (LWW) based on timestamps.
 - **Mathematically Unsound:** Does not satisfy Strong Eventual Consistency (SEC) properties for text/sequences.
 
 **Remediation Plan:**
-- [ ] Adopt a formal CRDT (Yjs/Automerge/RGA).
+- [x] Adopt a formal CRDT (Yjs/Automerge/RGA).
 - [ ] Implement Vector Clocks / Lamport Timestamps for causal ordering.
 
 ## 3. Client SDK: Thread Unsafe [HIGH]

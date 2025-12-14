@@ -18,12 +18,12 @@
 *Target State:* Durable, on-disk, ACID-compliant storage.
 - [ ] **Research & Select DB:** Evaluate embedded (SQLite/Badger) vs. external (Postgres/FoundationDB) for the core log.
 - [ ] **Implement WAL:** Replace `disk.go` with a Write-Ahead Log pattern tied to the new storage engine.
-- [ ] **Remove Global Lock:** Eliminate `s.mu.Lock()` on writes to allow concurrent processing.
+- [x] **Remove Global Lock:** Eliminate `s.mu.Lock()` on writes to allow concurrent processing.
 
 ### 2. Synchronization Engine Upgrade (Priority: CRITICAL)
 *Current State:* Last-Write-Wins (LWW) logic (lossy conflict resolution).
 *Target State:* Mathematically correct convergence.
-- [ ] **Integrate Real CRDTs:** Replace custom LWW logic with `Yjs` (via Y-CRDT port) or `Automerge` core.
+- [x] **Integrate Real CRDTs:** Replace custom LWW logic with `Yjs` (via Y-CRDT port) or `Automerge` core.
 - [ ] **Vector Clocks:** Implement proper causal ordering for operations.
 - [ ] **Conflict Test Suite:** Automated fuzz testing for concurrent edits.
 

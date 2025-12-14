@@ -67,12 +67,14 @@ func TestEngine_Persistence_Integration(t *testing.T) {
 	}
 
 	// CRITICAL CHECK: Type Assertion
-	restoredOp, ok := val.(crdt.Operation)
+	// The new Automerge implementation stores the value directly at the key.
+	// It does NOT store the Operation struct.
+	actualValue, ok := val.(string)
 	if !ok {
-		t.Fatalf("CRITICAL: Restored value is NOT of type crdt.Operation. Got %T. This means gob didn't register the type.", val)
+		t.Fatalf("Restored value is not a string. Got %T: %v", val, val)
 	}
 
-	if restoredOp.Value != "connected" {
-		t.Errorf("Value mismatch. Got %v, want 'connected'", restoredOp.Value)
+	if actualValue != "connected" {
+		t.Errorf("Value mismatch. Got %v, want 'connected'", actualValue)
 	}
 }
