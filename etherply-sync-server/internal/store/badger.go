@@ -29,9 +29,9 @@ func NewBadgerStore(path string) (*BadgerStore, error) {
 	}, nil
 }
 
-func (s *BadgerStore) Get(workspaceID, key string) (interface{}, bool, error) {
+func (s *BadgerStore) Get(namespace, key string) (interface{}, bool, error) {
 	var val []byte
-	dbKey := makeKey(workspaceID, key)
+	dbKey := makeKey(namespace, key)
 
 	err := s.db.View(func(txn *badger.Txn) error {
 		item, err := txn.Get(dbKey)
@@ -60,8 +60,8 @@ func (s *BadgerStore) Get(workspaceID, key string) (interface{}, bool, error) {
 	return decoded, true, nil
 }
 
-func (s *BadgerStore) Set(workspaceID, key string, value interface{}) error {
-	dbKey := makeKey(workspaceID, key)
+func (s *BadgerStore) Set(namespace, key string, value interface{}) error {
+	dbKey := makeKey(namespace, key)
 	valBytes, err := encode(value)
 	if err != nil {
 		return fmt.Errorf("failed to encode value: %w", err)
@@ -72,9 +72,9 @@ func (s *BadgerStore) Set(workspaceID, key string, value interface{}) error {
 	})
 }
 
-func (s *BadgerStore) GetAll(workspaceID string) (map[string]interface{}, error) {
+func (s *BadgerStore) GetAll(namespace string) (map[string]interface{}, error) {
 	result := make(map[string]interface{})
-	prefix := []byte(workspaceID + ":")
+	prefix := []byte(namespace + ":")
 
 	err := s.db.View(func(txn *badger.Txn) error {
 		opts := badger.DefaultIteratorOptions
@@ -86,7 +86,7 @@ func (s *BadgerStore) GetAll(workspaceID string) (map[string]interface{}, error)
 			item := it.Item()
 			k := item.Key()
 
-			// Extract original key from composite key "workspace:key"
+			// Extract original key from composite key "namespace:key"
 			// k is []byte
 			keyStr := string(k)
 			// primitive split, ideally robust
@@ -157,8 +157,8 @@ func (s *BadgerStore) Ping() error {
 
 // Helpers
 
-func makeKey(workspaceID, key string) []byte {
-	return []byte(fmt.Sprintf("%s:%s", workspaceID, key))
+func makeKey(namespace, key string) []byte {
+	return []byte(fmt.Sprintf("%s:%s", namespace, key))
 }
 
 func encode(val interface{}) ([]byte, error) {

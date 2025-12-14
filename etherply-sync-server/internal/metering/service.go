@@ -64,7 +64,11 @@ func (s *BadgerMeteringService) Record(workspaceID string, metric MetricType, de
 	// However, store.Get requires a composite key helper or just raw key?
 	// The current store.Get takes (bucket, key). We can treat bucket as "metering".
 
-	valBytes, exists, err := s.store.Get("metering", key)
+	// Use "sys:metering" namespace
+	// Note: The key is already "usage:wid:metric:date".
+	// We treat "sys:metering" as the namespace.
+
+	valBytes, exists, err := s.store.Get("sys:metering", key)
 	if err != nil {
 		return err
 	}
@@ -78,7 +82,7 @@ func (s *BadgerMeteringService) Record(workspaceID string, metric MetricType, de
 	buf := make([]byte, 8)
 	binary.LittleEndian.PutUint64(buf, uint64(newVal))
 
-	return s.store.Set("metering", key, buf)
+	return s.store.Set("sys:metering", key, buf)
 }
 
 func (s *BadgerMeteringService) GetUsage(workspaceID string, metric MetricType, start, end time.Time) (int64, error) {
@@ -88,7 +92,7 @@ func (s *BadgerMeteringService) GetUsage(workspaceID string, metric MetricType, 
 		dayStr := d.Format("2006-01-02")
 		key := fmt.Sprintf("usage:%s:%s:%s", workspaceID, metric, dayStr)
 
-		valBytes, exists, err := s.store.Get("metering", key)
+		valBytes, exists, err := s.store.Get("sys:metering", key)
 		if err != nil {
 			return 0, err
 		}

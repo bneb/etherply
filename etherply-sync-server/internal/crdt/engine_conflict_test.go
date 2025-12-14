@@ -40,7 +40,7 @@ func TestOfflineEdit_TimestampRespect(t *testing.T) {
 	// This is a bit "white-box" but necessary to verify the requirement.
 	// Normally we'd use a History() method on the engine if it exposed one.
 
-	val, exists, _ := ms.Get(workspaceID, "sync_doc")
+	val, exists, _ := ms.Get("ws:"+workspaceID, "sync_doc")
 	if !exists {
 		t.Fatal("Store empty")
 	}
@@ -108,7 +108,10 @@ func TestSequentialWrites_History(t *testing.T) {
 		Timestamp:   time.Now().Add(time.Second).UnixMicro(),
 	})
 
-	val, _, _ := ms.Get(workspaceID, "sync_doc")
+	val, exists, _ := ms.Get("ws:"+workspaceID, "sync_doc")
+	if !exists {
+		t.Fatal("Store empty")
+	}
 	doc, _ := automerge.Load(val.([]byte))
 	// We should see history growing
 	changes, _ := doc.Changes()

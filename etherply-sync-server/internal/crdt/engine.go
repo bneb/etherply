@@ -307,7 +307,7 @@ func (e *Engine) ApplyRemoteChanges(workspaceID string, remoteDoc []byte) error 
 
 // loadDoc retrieves document bytes from the store.
 func (e *Engine) loadDoc(workspaceID string) ([]byte, error) {
-	val, exists, err := e.store.Get(workspaceID, docKey)
+	val, exists, err := e.store.Get("ws:"+workspaceID, docKey)
 	if err != nil {
 		return nil, err
 	}
@@ -329,7 +329,7 @@ func (e *Engine) loadDoc(workspaceID string) ([]byte, error) {
 
 // saveDoc persists document bytes to the store.
 func (e *Engine) saveDoc(workspaceID string, doc []byte) error {
-	return e.store.Set(workspaceID, docKey, doc)
+	return e.store.Set("ws:"+workspaceID, docKey, doc)
 }
 
 // String helper for Operation debugging.

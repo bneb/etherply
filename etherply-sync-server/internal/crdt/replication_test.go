@@ -52,9 +52,9 @@ func TestApplyRemoteChanges_Integration(t *testing.T) {
 	}
 
 	// Get engine1's state as "remote" changes
-	state1, _, err := memStore1.Get(workspaceID, "sync_doc")
-	if err != nil {
-		t.Fatalf("failed to get engine1 state: %v", err)
+	state1, exists, err := memStore1.Get("ws:"+workspaceID, "sync_doc")
+	if err != nil || !exists {
+		t.Fatalf("failed to get engine1 state: %v (exists=%v)", err, exists)
 	}
 
 	// Engine 2 applies the remote changes
@@ -104,8 +104,15 @@ func TestApplyRemoteChanges_BidirectionalMerge(t *testing.T) {
 	}
 
 	// Cross-merge
-	state1, _, _ := memStore1.Get(workspaceID, "sync_doc")
-	state2, _, _ := memStore2.Get(workspaceID, "sync_doc")
+	state1, exists1, err := memStore1.Get("ws:"+workspaceID, "sync_doc")
+	if err != nil || !exists1 {
+		t.Fatalf("failed to get engine1 state: %v", err)
+	}
+
+	state2, exists2, err := memStore2.Get("ws:"+workspaceID, "sync_doc")
+	if err != nil || !exists2 {
+		t.Fatalf("failed to get engine2 state: %v", err)
+	}
 
 	if err := engine1.ApplyRemoteChanges(workspaceID, state2.([]byte)); err != nil {
 		t.Fatalf("engine1 merge failed: %v", err)

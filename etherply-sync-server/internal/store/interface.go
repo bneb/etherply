@@ -5,18 +5,18 @@ package store
 type Store interface {
 	// Get retrieves a value from the store.
 	// Returns value, found boolean, and error.
-	Get(workspaceID, key string) (interface{}, bool, error)
+	Get(namespace, key string) (interface{}, bool, error)
 
 	// Set writes a value to the store.
-	Set(workspaceID, key string, value interface{}) error
+	Set(namespace, key string, value interface{}) error
 
-	// GetAll retrieves all key-value pairs for a given workspace.
-	GetAll(workspaceID string) (map[string]interface{}, error)
+	// GetAll retrieves all key-value pairs for a given namespace.
+	GetAll(namespace string) (map[string]interface{}, error)
 
 	// Close cleans up resources.
 	Close() error
 
-	// Stats returns storage metrics (e.g., number of keys/workspaces).
+	// Stats returns storage metrics (e.g., number of keys).
 	Stats() (map[string]interface{}, error)
 
 	// Ping checks if the store is healthy and accessible.

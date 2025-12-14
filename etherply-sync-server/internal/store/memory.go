@@ -15,11 +15,11 @@ func NewMemoryStore() *MemoryStore {
 	}
 }
 
-func (s *MemoryStore) Get(workspaceID string, key string) (interface{}, bool, error) {
+func (s *MemoryStore) Get(namespace string, key string) (interface{}, bool, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	workspace, ok := s.data[workspaceID]
+	workspace, ok := s.data[namespace]
 	if !ok {
 		return nil, false, nil
 	}
@@ -27,24 +27,24 @@ func (s *MemoryStore) Get(workspaceID string, key string) (interface{}, bool, er
 	return val, ok, nil
 }
 
-func (s *MemoryStore) Set(workspaceID string, key string, value interface{}) error {
+func (s *MemoryStore) Set(namespace string, key string, value interface{}) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	workspace, ok := s.data[workspaceID]
+	workspace, ok := s.data[namespace]
 	if !ok {
 		workspace = make(map[string]interface{})
-		s.data[workspaceID] = workspace
+		s.data[namespace] = workspace
 	}
 	workspace[key] = value
 	return nil
 }
 
-func (s *MemoryStore) GetAll(workspaceID string) (map[string]interface{}, error) {
+func (s *MemoryStore) GetAll(namespace string) (map[string]interface{}, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	workspace, ok := s.data[workspaceID]
+	workspace, ok := s.data[namespace]
 	if !ok {
 		// Return empty map if no data exists yet
 		return make(map[string]interface{}), nil

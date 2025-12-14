@@ -80,7 +80,7 @@ func TestDataCorruption_SelfHealing(t *testing.T) {
 	// Storage now stores []byte under "sync_doc".
 
 	// Corrupt the root blob
-	ms.Set(workspaceID, "sync_doc", []byte("GARBAGE DATA NOT AUTOMERGE"))
+	ms.Set("ws:"+workspaceID, "sync_doc", []byte("GARBAGE DATA NOT AUTOMERGE"))
 
 	// Apply a valid operation on top of it
 	recoveryOp := crdt.Operation{
