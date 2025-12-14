@@ -6,13 +6,14 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { AuthService } from '@/lib/mocks';
+import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -21,13 +22,12 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const user = await AuthService.signIn(email);
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('etherply_user', JSON.stringify(user));
-            }
+            await api.login(email, password);
             router.push('/dashboard');
         } catch (error) {
-            console.error(error);
+            console.error('Login failed:', error);
+            // In a real app we would show a toast/alert here
+            // For MVP velocity we just log it, as per plan
         } finally {
             setLoading(false);
         }
@@ -58,6 +58,16 @@ export default function LoginPage() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                className="h-11 bg-white/[0.03] border-white/10 text-white placeholder:text-zinc-600 focus-visible:ring-blue-500/50"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Input
+                                type="password"
+                                placeholder="••••••••"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 className="h-11 bg-white/[0.03] border-white/10 text-white placeholder:text-zinc-600 focus-visible:ring-blue-500/50"
                             />
                         </div>

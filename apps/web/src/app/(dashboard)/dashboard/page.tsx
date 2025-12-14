@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { api, type Project } from '@/lib/api.client';
+import { api, type Project } from '@/lib/api';
 import { Plus, Server, Activity, Globe, Wifi } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
