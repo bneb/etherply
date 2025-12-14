@@ -1,11 +1,9 @@
-# EtherPly Sync Server Specification (The "Mega-Ticket")
+# EtherPly Sync Server Specification
 
 > [!IMPORTANT]
 > This document is the **Source of Truth**. If the code contradicts this document, the code is a defect.
 
-## 1. The Mega-Ticket (The Spec)
-
-### User Stories (Gherkin)
+## 1. User Stories (Gherkin)
 
 ```gherkin
 Feature: Real-time Workspace Synchronization
@@ -15,6 +13,7 @@ Feature: Real-time Workspace Synchronization
     And a target Workspace ID "workspace-123"
     When the client initiates a WebSocket connection to "/v1/sync/workspace-123"
     Then the server accepts the connection with HTTP 101 Switching Protocols
+    And the client receives an "init" message with current state
     And the client enters the "Connected" state
 
   Scenario: Client Fails Authentication
@@ -24,13 +23,20 @@ Feature: Real-time Workspace Synchronization
     And the connection is closed immediately
 
   Scenario: Client Sends Operation
-    Given a connected session
+    Given a connected session with "write" scope
     When the client sends an "op" message with key "foo" and value "bar"
-    Then the server broadcasts this message to all other clients in "workspace-123"
-    And the server persists this state to the AOF file
+    Then the server persists the operation using Automerge CRDT
+    And the server broadcasts this message to all clients in "workspace-123"
+    And the webhook (if configured) receives a "doc.updated" event
+
+  Scenario: Read-Only Client Attempts Write
+    Given a connected session with "read" scope only
+    When the client sends an "op" message
+    Then the server responds with an "error" message
+    And the operation is not persisted
 ```
 
-### The State Machine
+## 2. State Machine
 
 ```mermaid
 stateDiagram-v2
@@ -40,26 +46,37 @@ stateDiagram-v2
     Authenticating --> Connected: valid=true
     Authenticating --> Error: valid=false (401)
     Connected --> Synced: Received Initial State
-    Connected --> Disconnected: Network Failure / Ping Timeout
+    Synced --> Synced: Operations (bidirectional)
+    Synced --> Disconnected: Network Failure / Graceful Close
     Error --> [*]
 ```
 
-### Data Contracts (JSON Payload)
+## 3. Data Contracts
 
-**Direction: Client -> Server**
+### Client → Server
 
 ```json
 {
   "type": "op",
   "payload": {
     "key": "string (Required)",
-    "value": "any (Required - string, number, boolean, object, or null)",
-    "timestamp": "integer (Required - Unix Microseconds)"
+    "value": "any (Required)",
+    "timestamp": "integer (Optional - Unix Microseconds)"
   }
 }
 ```
 
-**Direction: Server -> Client (Broadcast)**
+### Server → Client (Init)
+
+```json
+{
+  "type": "init",
+  "data": { "...current state..." },
+  "heads": ["change-hash-1", "change-hash-2"]
+}
+```
+
+### Server → Client (Broadcast)
 
 ```json
 {
@@ -72,26 +89,27 @@ stateDiagram-v2
 }
 ```
 
-## 2. The N Constraint (The Scope)
+## 4. Technical Implementation
 
-### The Iron Boundary (Out of Scope)
-The following are strictly **OUT OF SCOPE** for the current version. Any discussion regarding these features will be blocked.
+| Component | Technology | Notes |
+|-----------|------------|-------|
+| Conflict Resolution | Automerge CRDT | Automatic merge without data loss |
+| Persistence | BadgerDB v4 | ACID-compliant, embedded |
+| Auth | JWT (HS256) | Scopes: `read`, `write`, `admin` |
+| Transport | WebSocket | JSON payloads |
 
-1.  **Complex RBAC**: We do not distinguish between "Editors" and "Viewers". If you have a token, you can write.
-2.  **Multi-Region Replication**: The server assumes a single instance writer (per workspace). Distributed consensus is not implemented.
-3.  **History/Undo**: The server stores LWW (Last-Write-Wins). It does not maintain an operation log for undo functionality.
-4.  **Schema Validation**: The server does not validate the content of `value`. It is a dumb pipe.
+## 5. Out of Scope (Current Version)
 
-## 3. The Ambiguity Audit (QA Prep)
+- ~~Complex RBAC~~ **IMPLEMENTED** (read/write scopes)
+- **Multi-Region Replication** - Single instance per workspace
+- ~~History/Undo~~ **IMPLEMENTED** (via `/v1/history/{workspace_id}`)
+- **Schema Validation** - Server does not validate `value` content
 
-### Error State Dictionary
+## 6. Error Codes
 
-| Code | Message / Symptom | Trigger Condition |
-| :--- | :--- | :--- |
-| **401** | `Unauthorized` | Missing `token` query param or invalid signature. |
-| **500** | `Internal Server Error` | Unexpected panic or AOF write failure. |
-| **N/A** | `connection refused` | Server process is not running. |
-| **N/A** | `address already in use` | Port `8080` is occupied by a zombie process. |
+| Code | Trigger |
+|------|---------|
+| 401 | Missing/invalid JWT |
+| 403 | Write attempted with read-only scope |
+| 500 | Internal error (persistence failure) |
 
-### Empty States
-*   **New Workspace**: If a client connects to a Workspace ID that has never been seen, the server initializes it with an empty state map `{}`. No error is returned.

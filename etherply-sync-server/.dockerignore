@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+etherply-sync-server
+
+# Test artifacts
+*.test
+*_test.go
+coverage.out
+coverage.html
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Documentation (not needed in runtime image)
+*.md
+docs/
+LICENSE
+
+# Local development files
+docker-compose.yml
+.env
+.env.*
+
+# BadgerDB data (should be mounted as volume)
+badger.db/
+*.db/
+
+# Temporary files
+tmp/
+temp/

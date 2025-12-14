@@ -212,7 +212,7 @@ func (e *Engine) GetFullState(workspaceID string) (*Snapshot, error) {
 }
 
 // GetChanges returns the delta (changes) since a specific version vector (heads).
-// If 'since' is nil/empty, it returns the full history.
+// If 'since' is nil/empty, it returns the full document state for bootstrapping.
 func (e *Engine) GetChanges(workspaceID string, since []string) ([]byte, error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
@@ -235,11 +235,44 @@ func (e *Engine) GetChanges(workspaceID string, since []string) ([]byte, error) 
 		return nil, err
 	}
 
-	// TODO: Implement efficient Delta Sync using automerge.Doc.Changes() or SaveIncremental().
-	// Currently we return the full compressed document state.
-	// This is valid but less efficient.
-	// We need to resolve the API for ParseChangeHash and Change.Bytes() to enable deltas.
+	// Efficient Delta Sync using automerge.Doc.Changes().
+	// doc.Changes(since...) returns all changes that happened after the given heads.
+	if len(since) > 0 {
+		heads := make([]automerge.ChangeHash, 0, len(since))
+		for _, h := range since {
+			hash, err := automerge.NewChangeHash(h)
+			if err != nil {
+				// If a client sends an invalid hash, return error to signal protocol mismatch.
+				e.logger.Warn("invalid_change_hash", slog.String("hash", h), slog.Any("error", err))
+				return nil, fmt.Errorf("invalid change hash: %w", err)
+			}
+			heads = append(heads, hash)
+		}
 
+		changes, err := doc.Changes(heads...)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get changes: %w", err)
+		}
+
+		// Serialize all changes into a single byte buffer.
+		// Each change is prefixed with its length (4 bytes, big-endian) for framing.
+		// This allows the client to split them back.
+		var buf []byte
+		for _, ch := range changes {
+			chBytes := ch.Save()
+			// Simple concatenation: len(4 bytes) + data
+			lenBytes := make([]byte, 4)
+			lenBytes[0] = byte(len(chBytes) >> 24)
+			lenBytes[1] = byte(len(chBytes) >> 16)
+			lenBytes[2] = byte(len(chBytes) >> 8)
+			lenBytes[3] = byte(len(chBytes))
+			buf = append(buf, lenBytes...)
+			buf = append(buf, chBytes...)
+		}
+		return buf, nil
+	}
+
+	// Fallback to full state if no heads provided (initial sync)
 	return doc.Save(), nil
 }
 

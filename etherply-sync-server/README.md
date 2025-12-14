@@ -1,56 +1,70 @@
 # EtherPly Sync Server
 
-The robust, Go-based heart of the EtherPly platform. Handles WebSocket connections, CRDT conflict resolution, and persistence.
+The robust, Go-based heart of the EtherPly platform. Handles WebSocket connections, CRDT conflict resolution (Automerge), and durable persistence (BadgerDB).
 
 ## Quick Start
 
-### 1. Build and Run
+### Option 1: Go
+
 ```bash
-# From this directory
-go mod tidy
+export ETHERPLY_JWT_SECRET="your-secret-here"
 go run main.go
 ```
 
-### 2. Verify Health
-Run the following command to check if the server is accepting connections:
+### Option 2: Docker
 
 ```bash
-curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/v1/presence/health-check
+docker build -t etherply-sync-server .
+docker run -p 8080:8080 -e ETHERPLY_JWT_SECRET="your-secret" etherply-sync-server
 ```
-**Expected Output:** `200`
+
+### Verify Health
+
+```bash
+curl http://localhost:8080/healthz
+# {"status":"ok","timestamp":"...","uptime":"..."}
+
+curl http://localhost:8080/readyz
+# {"status":"ok","timestamp":"...","checks":{"store":"ok"}}
+```
 
 ## Configuration
-Configuration is handled via Environment Variables.
 
-| Variable | Description | Default | Required? |
-|---|---|---|---|
-| `PORT` | The HTTP port to listen on. | `8080` | No |
-| `ETHERPLY_JWT_SECRET` | Secret key for validating auth tokens. | **NONE** | **YES (CRITICAL)** |
-| `STORAGE_PATH` | Path to the AOF persistence file. | `etherply.aof` | No |
+| Variable | Default | Required | Description |
+|----------|---------|----------|-------------|
+| `ETHERPLY_JWT_SECRET` | - | **Yes** | JWT signing secret for authentication |
+| `PORT` | `8080` | No | HTTP server port |
+| `BADGER_PATH` | `./badger.db` | No | Path to BadgerDB data directory |
+| `SHUTDOWN_TIMEOUT_SECONDS` | `30` | No | Graceful shutdown timeout |
+| `WEBHOOK_URL` | - | No | URL for webhook event delivery |
 
-## Specification (Source of Truth)
-For the definitive guide on User Stories, State Machines, and Data Contracts, refer to [SPECIFICATION.md](./SPECIFICATION.md).
+## API Endpoints
 
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/v1/sync/{workspace_id}` | WS | WebSocket for real-time sync |
+| `/v1/presence/{workspace_id}` | GET | List users in workspace |
+| `/v1/history/{workspace_id}` | GET | Document change history |
+| `/v1/stats` | GET | Server metrics |
+| `/healthz` | GET | Liveness probe |
+| `/readyz` | GET | Readiness probe |
 
-## Troubleshooting (The "2 AM" Guide)
+## Documentation
+
+- [SPECIFICATION.md](./SPECIFICATION.md) - User stories and data contracts
+- [DEPLOYMENT.md](../docs/DEPLOYMENT.md) - Docker/Kubernetes deployment guide
+
+## Troubleshooting
 
 ### "Connection Refused"
-**Symptoms:** `dial tcp [::1]:8080: connect: connection refused`
-**Diagnosis:** The server process is not running.
-**Fix:**
-1. Check if the process crashed: `ps aux | grep main.go`
-2. Restart it: `go run main.go`
+Server not running. Check: `ps aux | grep etherply`
 
-### "Unauthorized" / 401 Errors
-**Symptoms:** Client receives `401 Unauthorized`.
-**Diagnosis:** The `ETHERPLY_JWT_SECRET` env var doesn't match the token signature.
-**Fix:**
-1. Check the server's secret: `echo $ETHERPLY_JWT_SECRET`
-2. Ensure the client is signing with the *exact* same string.
+### "Unauthorized" (401)
+`ETHERPLY_JWT_SECRET` mismatch. Verify both client and server use identical secret.
 
-### "Panic: Address already in use"
-**Symptoms:** `listen tcp :8080: bind: address already in use`
-**Diagnosis:** Another instance is running, or a zombie process is holding the port.
-**Fix:**
-1. Find the PID: `lsof -i :8080`
-2. Kill it: `kill -9 <PID>`
+### "Address Already in Use"
+Port occupied. Find PID: `lsof -i :8080` then `kill -9 <PID>`
+
+### Persistence Errors
+Check `BADGER_PATH` is writable and has disk space.
+

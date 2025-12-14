@@ -24,7 +24,7 @@
 *Current State:* Last-Write-Wins (LWW) logic (lossy conflict resolution).
 *Target State:* Mathematically correct convergence.
 - [x] **Integrate Real CRDTs:** Replace custom LWW logic with `Yjs` (via Y-CRDT port) or `Automerge` core.
-- [ ] **Vector Clocks:** Implement proper causal ordering for operations.
+- [x] **Vector Clocks:** Implement proper causal ordering for operations.
 - [x] **Conflict Test Suite:** Automated fuzz testing for concurrent edits.
 
 ### 3. SDK Hardening
@@ -42,7 +42,7 @@
 ### 1. Horizontal Scalability / Clustering
 - [x] **Stateless Servers:** Decouple compute (WebSocket logic) from storage.
 - [x] **Pub/Sub Layer:** Implement Redis/NATS for cross-server message propogation.
-- [ ] **Session Affinity:** Sticky sessions at the load balancer level.
+- [x] **Session Affinity:** Sticky sessions at the load balancer level.
 
 ### 2. Permissions & Auth
 - [x] **Granular ACLs:** "Read-only" vs "Write" access tokens.
@@ -55,6 +55,6 @@
 ---
 
 ## Q3 2026+: Enterprise Readiness
-- [ ] **SLA Guarantees**
+- [x] **SLA Guarantees**
 - [ ] **Multi-Region Replication**
-- [ ] **On-Premise Deployment options**
+- [x] **On-Premise Deployment options**

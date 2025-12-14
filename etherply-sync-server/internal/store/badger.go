@@ -145,6 +145,16 @@ func (s *BadgerStore) Stats() (map[string]interface{}, error) {
 	}, nil
 }
 
+// Ping checks if the BadgerDB is healthy and accessible.
+// Performs a lightweight read transaction to verify connectivity.
+func (s *BadgerStore) Ping() error {
+	return s.db.View(func(txn *badger.Txn) error {
+		// A simple read-only transaction to verify DB is accessible
+		// We don't actually need to read anything, just open a transaction
+		return nil
+	})
+}
+
 // Helpers
 
 func makeKey(workspaceID, key string) []byte {

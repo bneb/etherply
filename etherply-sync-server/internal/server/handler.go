@@ -19,8 +19,18 @@ import (
 	"github.com/bneb/etherply/etherply-sync-server/internal/presence"
 	"github.com/bneb/etherply/etherply-sync-server/internal/pubsub"
 	"github.com/bneb/etherply/etherply-sync-server/internal/webhook"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
+
+// generateSessionID creates a unique identifier for each WebSocket connection.
+// This ID is used for:
+//   - Session affinity: Load balancers can use this to route related requests to the same server
+//   - Debugging: Correlate logs across a single connection lifecycle
+//   - Metrics: Track per-session metrics
+func generateSessionID() string {
+	return uuid.New().String()
+}
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  4096,
@@ -125,7 +135,16 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 		userID = "anon"
 	}
 
-	conn, err := upgrader.Upgrade(w, r, nil)
+	// Generate unique session ID for this connection (Session Affinity support)
+	// This ID can be used by load balancers for sticky sessions.
+	sessionID := generateSessionID()
+
+	// Set custom response header for session affinity before upgrade
+	// Load balancers can read this header to route subsequent HTTP requests.
+	responseHeaders := http.Header{}
+	responseHeaders.Set("X-Session-ID", sessionID)
+
+	conn, err := upgrader.Upgrade(w, r, responseHeaders)
 	if err != nil {
 		h.logger.Error("ws_upgrade_failed", slog.Any("error", err))
 		return
@@ -137,15 +156,17 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	// Register Connection Presence
 	h.presenceManager.AddUser(workspaceID, presence.User{UserID: userID, Status: presence.StatusOnline})
 
-	// Webhook: client.connected
+	// Webhook: client.connected (now includes session_id for affinity tracking)
 	h.webhook.Dispatch("client.connected", map[string]string{
 		"workspace_id": workspaceID,
 		"user_id":      userID,
+		"session_id":   sessionID,
 	})
 
 	h.logger.Info("concurrent_connection_peak",
 		slog.String("event", "metric"),
 		slog.String("workspace_id", workspaceID),
+		slog.String("session_id", sessionID),
 		slog.String("user_tier", "FREE"),
 	)
 
@@ -153,10 +174,11 @@ func (h *Handler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		unsub()
 		h.presenceManager.RemoveUser(workspaceID, userID)
-		// Webhook: client.disconnected
+		// Webhook: client.disconnected (includes session_id)
 		h.webhook.Dispatch("client.disconnected", map[string]string{
 			"workspace_id": workspaceID,
 			"user_id":      userID,
+			"session_id":   sessionID,
 		})
 		conn.Close()
 	}()

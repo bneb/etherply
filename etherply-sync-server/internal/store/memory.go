@@ -79,5 +79,10 @@ func (s *MemoryStore) Stats() (map[string]interface{}, error) {
 	}, nil
 }
 
+// Ping checks if the store is healthy. For MemoryStore, this always succeeds.
+func (s *MemoryStore) Ping() error {
+	return nil
+}
+
 // Ensure interface satisfaction
 var _ Store = (*MemoryStore)(nil)

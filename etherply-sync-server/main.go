@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"strconv"
+	"syscall"
+	"time"
 
 	"github.com/bneb/etherply/etherply-sync-server/internal/auth"
 	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
@@ -17,22 +22,28 @@ import (
 // main is the entry point for the EtherPly Sync Server.
 //
 // Architecture Overview:
-//  1. Config: Reads env vars (PORT, JWT_SECRET).
-//  2. Persistence: Initializes DiskStore (AOF) for durability.
+//  1. Config: Reads env vars (PORT, JWT_SECRET, SHUTDOWN_TIMEOUT_SECONDS).
+//  2. Persistence: Initializes BadgerDB for durability.
 //  3. Engine: Starts the CRDT Engine which manages state per workspace.
 //  4. Presence: Starts the ephemeral Presence Manager.
-//  5. HTTP: Sets up routes and blocked/non-blocking handlers.
+//  5. HTTP: Sets up routes and health checks.
+//  6. Graceful Shutdown: Handles SIGTERM/SIGINT for clean connection draining.
 //
 // This server is designed to be stateless regarding "sessions" but stateful regarding "document data".
-// It can be deployed to PaaS like Fly.io or Heroku, but requires a persistent volume for the AOF file
-// if data durability across restarts is required.
+// It can be deployed to PaaS like Fly.io or Kubernetes with proper health probes.
 func main() {
-	// PORT environment variable is standard for Fly.io and Heroku.
-	// If missing, we default to 8080 for local development convenience.
-	// 2 AM Rule: Do not assume standard ports are free. Check lsof -i :8080 if failing.
+	// PORT environment variable is standard for Fly.io, Heroku, and Kubernetes.
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
+	}
+
+	// Graceful shutdown timeout (default 30 seconds)
+	shutdownTimeout := 30 * time.Second
+	if timeoutStr := os.Getenv("SHUTDOWN_TIMEOUT_SECONDS"); timeoutStr != "" {
+		if t, err := strconv.Atoi(timeoutStr); err == nil && t > 0 {
+			shutdownTimeout = time.Duration(t) * time.Second
+		}
 	}
 
 	// AUTH SECURITY
@@ -45,16 +56,19 @@ func main() {
 	auth.Init(jwtSecret)
 
 	// Initialize Store (BadgerDB v4 for Production-Grade Persistence)
-	// We use a local directory "badger.db". In production, this path comes from env.
-	// Ideally this should be on a mounted volume.
-	stateStore, err := store.NewBadgerStore("badger.db")
+	// BADGER_PATH allows customization for container deployments
+	badgerPath := os.Getenv("BADGER_PATH")
+	if badgerPath == "" {
+		badgerPath = "./badger.db"
+	}
+	stateStore, err := store.NewBadgerStore(badgerPath)
 	if err != nil {
-		log.Fatalf("Failed to initialize persistence layer: %v", err)
+		log.Fatalf("Failed to initialize persistence layer at %s: %v", badgerPath, err)
 	}
 	defer stateStore.Close()
+	log.Printf("Persistence layer initialized at: %s", badgerPath)
 
 	// Initialize CRDT Engine
-	// The Engine holds the "Truth" of the document state in memory.
 	crdtEngine := crdt.NewEngine(stateStore)
 
 	// Initialize Presence Manager (Ephemeral, In-Memory)
@@ -67,13 +81,18 @@ func main() {
 	webhookURL := os.Getenv("WEBHOOK_URL")
 	dispatcher := webhook.NewDispatcher(webhookURL)
 
-	// Initialize Server Handler
+	// Initialize Handlers
 	srv := server.NewHandler(crdtEngine, presenceManager, pubsubService, dispatcher)
+	healthChecker := server.NewHealthChecker(stateStore)
 
 	// Router
 	mux := http.NewServeMux()
 
-	// Public Routes
+	// Health Check Routes (no auth required - Kubernetes probes)
+	mux.HandleFunc("/healthz", healthChecker.HandleHealthz)
+	mux.HandleFunc("/readyz", healthChecker.HandleReadyz)
+
+	// API Routes
 	mux.HandleFunc("/v1/sync/", srv.HandleWebSocket)       // WS: /v1/sync/{workspace_id}
 	mux.HandleFunc("/v1/presence/", srv.HandleGetPresence) // REST: /v1/presence/{workspace_id}
 	mux.HandleFunc("/v1/stats", srv.HandleGetStats)        // REST: /v1/stats
@@ -82,9 +101,44 @@ func main() {
 	// Apply Middleware (Logging, Auth, Recovery)
 	handler := auth.Middleware(mux)
 
-	log.Printf("EtherPly Sync Server starting on port %s", port)
-	// ListenAndServe is blocking.
-	if err := http.ListenAndServe(":"+port, handler); err != nil {
-		log.Fatalf("Server failed: %v", err)
+	// Create HTTP server with graceful shutdown support
+	httpServer := &http.Server{
+		Addr:    ":" + port,
+		Handler: handler,
+	}
+
+	// Channel to signal server errors
+	serverErrors := make(chan error, 1)
+
+	// Start server in goroutine
+	go func() {
+		log.Printf("EtherPly Sync Server starting on port %s", port)
+		log.Printf("Health endpoints: /healthz (liveness), /readyz (readiness)")
+		serverErrors <- httpServer.ListenAndServe()
+	}()
+
+	// Wait for interrupt signal or server error
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
+
+	select {
+	case err := <-serverErrors:
+		if err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server error: %v", err)
+		}
+	case sig := <-shutdown:
+		log.Printf("Received signal %v, initiating graceful shutdown...", sig)
+
+		// Create shutdown context with timeout
+		ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+		defer cancel()
+
+		// Attempt graceful shutdown
+		if err := httpServer.Shutdown(ctx); err != nil {
+			log.Printf("Graceful shutdown failed: %v, forcing close", err)
+			httpServer.Close()
+		}
+
+		log.Println("Server shutdown complete")
 	}
 }
