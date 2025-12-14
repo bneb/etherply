@@ -1,0 +1,20 @@
+<svg viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- EtherPly Logo - Dark Theme -->
+    
+    <!-- === LEFT ASSEMBLY === -->
+    <g transform="translate(0,0)">
+        <rect fill="#ffffff" x="0" y="0" width="6" height="75" />
+        <rect fill="#ffffff" x="6" y="0" width="34" height="6" />
+        <rect fill="#005e7c" x="14" y="14" width="20" height="61" />
+        <!-- Hard-light simulated or opaque fallback. Using opacity as per user CSS safely. -->
+        <rect fill="#0094c6" fill-opacity="0.8" style="mix-blend-mode: hard-light;" x="14" y="14" width="6" height="61" />
+    </g>
+
+    <!-- === RIGHT ASSEMBLY === -->
+    <g transform="translate(40,25)">
+        <rect fill="#ffffff" x="34" y="0" width="6" height="75" />
+        <rect fill="#ffffff" x="0" y="69" width="34" height="6" />
+        <rect fill="#005e7c" x="6" y="0" width="20" height="61" />
+        <rect fill="#0094c6" fill-opacity="0.8" style="mix-blend-mode: hard-light;" x="20" y="0" width="6" height="61" />
+    </g>
+</svg>

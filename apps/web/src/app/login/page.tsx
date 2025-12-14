@@ -2,12 +2,13 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { AuthService } from '@/lib/mocks';
 import { useRouter } from 'next/navigation';
-import { Zap } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -33,35 +34,40 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-black/90 p-4">
-            <Card className="w-full max-w-md bg-white/5 border-white/10">
-                <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 bg-blue-600 p-2 rounded-lg w-fit">
-                        <Zap className="h-6 w-6 text-white text-fill-white" />
+        <div className="min-h-screen flex items-center justify-center bg-black p-4 selection:bg-blue-500/20">
+            {/* Background Effects */}
+            <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 blur-[100px] rounded-full -z-10" />
+
+            <Card className="w-full max-w-md bg-black/40 backdrop-blur-xl border-white/5 shadow-2xl relative z-10">
+                <CardHeader className="text-center pb-8">
+                    <div className="mx-auto mb-6 bg-blue-600/10 p-3 rounded-xl ring-1 ring-blue-500/20 w-fit">
+                        <Image src="/logo.svg" alt="EtherPly Logo" width={24} height={24} className="h-6 w-6" />
                     </div>
-                    <CardTitle className="text-2xl">Welcome Back</CardTitle>
-                    <CardDescription>Enter your email to sign in to the console.</CardDescription>
+                    <CardTitle className="text-2xl font-bold tracking-tight text-white">Welcome Back</CardTitle>
+                    <CardDescription className="text-zinc-500">Enter your email to sign in to the console.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div className="space-y-2">
                             <Input
                                 type="email"
-                                placeholder="developer@company.com"
+                                placeholder="developer@etherply.com"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="bg-black/20 border-white/10 text-white placeholder:text-zinc-500"
+                                className="h-11 bg-white/[0.03] border-white/10 text-white placeholder:text-zinc-600 focus-visible:ring-blue-500/50"
                             />
                         </div>
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? 'Signing In...' : 'Sign In with Email'}
+                        <Button type="submit" className="w-full h-11 bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)]" disabled={loading}>
+                            {loading ? 'Signing In...' : 'Continue with Email'}
+                            {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
                         </Button>
                     </form>
                 </CardContent>
-                <CardFooter className="flex justify-center border-t border-white/5 pt-6">
-                    <p className="text-xs text-zinc-500">
-                        By clicking continue, you agree to our <Link href="#" className="underline hover:text-white">Terms of Service</Link>
+                <CardFooter className="flex justify-center pt-6 pb-6">
+                    <p className="text-xs text-zinc-600 text-center max-w-xs">
+                        By clicking continue, you agree to our <Link href="#" className="underline hover:text-zinc-400 transition-colors">Terms of Service</Link> and <Link href="#" className="underline hover:text-zinc-400 transition-colors">Privacy Policy</Link>.
                     </p>
                 </CardFooter>
             </Card>
