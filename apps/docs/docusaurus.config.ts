@@ -3,8 +3,8 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'EtherPly Docs',
-  tagline: 'Real-time sync infrastructure in minutes.',
+  title: 'EtherPly',
+  tagline: 'The infrastructure of presence.',
   favicon: 'img/favicon.ico',
 
   url: 'https://docs.etherply.com',

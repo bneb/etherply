@@ -1,73 +1,72 @@
-# Integrate EtherPly in 5 Minutes
+# The First Mile
 
-> [!TIP]
-> **SDK Status:** The `@etherply/sdk` package is ready for use!
-> 
-> ```bash
-> npm install @etherply/sdk
-> ```
+> "Simplicity is the ultimate sophistication." — Leonardo da Vinci
 
-## Prerequisites
-- A valid EtherPly API Key (get one at dashboard.etherply.com)
-- A React / Next.js / Vue / Svelte project
+You are here because you want to build something **alive**. 
+The web we grew up with was a library—static pages, cached assets, solitary experiences. 
+We are building the **Living Web**. Where cursors dance, text flows between screens, and state is a shared hallucination.
 
-## 1. Install the SDK
+EtherPly is the engine for this new reality. It is not just a WebSocket wrapper; it is an opinionated, conflict-free, friction-less sync engine designed for the high-speed collision of ideas.
+
+## The Ritual (Installation)
+
+We believe in "Zero Friction." You should be multiplayer in the time it takes to brew a pour-over.
 
 ```bash
-npm install @etherply/sdk
+npm install @etherply/sdk @etherply/react-components
 ```
 
-## 2. Initialize the Client
+## The Invocation (Usage)
 
-```typescript
-import { EtherPlyClient } from '@etherply/sdk';
+Do not manage WebSocket connections. Do not parse JSON. Do not handle reconnection logic.
+Simply **declare** your intent.
 
-const client = new EtherPlyClient({
-    workspaceId: "my-first-app",
-    userId: "user-123",  // Replace with your auth logic
-    token: "your-jwt-token"  // Required in production
-});
-
-client.connect();
-```
-
-## 3. Listen for Data (React)
-
-Use the built-in hooks for easiest integration:
+### 1. The Provider
+Wrap your application in the ether.
 
 ```tsx
-import { useEtherPly, useDocument } from '@etherply/sdk/react';
+import { EtherPlyProvider } from '@etherply/sdk/react';
 
-function MyComponent() {
-  const { isConnected } = useEtherPly({
-    workspaceId: 'my-workspace',
-    token: 'jwt'
-  });
-  
-  const { value, setValue } = useDocument({ 
-    key: 'shared-text',
-    initialValue: '' 
-  });
-  
-  if (!isConnected) return <div>Connecting...</div>;
-  
+<EtherPlyProvider config={{ workspaceId: 'room-1', token: 'dev' }}>
+  <App />
+</EtherPlyProvider>
+```
+
+### 2. The Magic
+Drop in our pre-fabricated "Magic Components" to instantly enliven the space.
+
+```tsx
+import { LiveCursors } from '@etherply/react-components';
+
+export default function Canvas() {
   return (
-    <input 
-      value={value} 
-      onChange={(e) => setValue(e.target.value)} 
-    />
+    <div>
+        <LiveCursors /> {/* ✨ Presence, throttled and interpolated. */}
+        <YourContent />
+    </div>
   );
 }
 ```
 
+### 3. The State
+Synchronize data as easily as `useState`.
+
+```tsx
+import { useDocument } from '@etherply/sdk/react';
+
+const { value, setValue } = useDocument({ key: 'manifesto', initialValue: '' });
+```
+
 ---
 
-## Next Steps
+## The Library
+We have prepared a suite of examples to guide your hand.
 
-| Resource | Description |
-|----------|-------------|
-| [API Reference](./api/http-api.md) | Full WebSocket and REST API docs |
-| [Architecture](./concepts/architecture.md) | How EtherPly works under the hood |
-| [Demo App](https://github.com/bneb/etherply/tree/main/examples/text-editor) | "Hello World" Text Editor |
-| [Examples](https://github.com/bneb/etherply/tree/main/examples) | Full Library (Kanban, Cursors, IoT) |
-| [Go SDK](https://github.com/bneb/etherply/tree/main/pkg/go-sdk) | For backend-to-backend sync |
+| Composition | Path | Use Case |
+|---|---|---|
+| **Text Editor** | [`examples/text-editor`](./examples/text-editor) | The "Hello World" of sync. |
+| **Kanban Board** | [`examples/kanban`](./examples/kanban) | Complex, nested state. |
+| **Cursors** | [`examples/cursors`](./examples/cursors) | High-frequency ephemeral data. |
+| **IoT Dashboard** | [`examples/iot`](./examples/iot) | Machine-to-Machine telemetry. |
+
+Begin.
