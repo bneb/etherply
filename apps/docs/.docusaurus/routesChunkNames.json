@@ -1,0 +1,262 @@
+{
+  "/docs/__docusaurus/debug-e58": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---docs-docusaurus-debugb-38-c84"
+    }
+  },
+  "/docs/__docusaurus/debug/config-2ce": {
+    "__comp": "__comp---theme-debug-config-23-a-2ff",
+    "__context": {
+      "plugin": "plugin---docs-docusaurus-debugb-38-c84"
+    }
+  },
+  "/docs/__docusaurus/debug/content-11b": {
+    "__comp": "__comp---theme-debug-contentba-8-ce7",
+    "__context": {
+      "plugin": "plugin---docs-docusaurus-debugb-38-c84"
+    },
+    "__props": "__props---docs-docusaurus-debug-content-344-8d5"
+  },
+  "/docs/__docusaurus/debug/globalData-f13": {
+    "__comp": "__comp---theme-debug-global-dataede-0fa",
+    "__context": {
+      "plugin": "plugin---docs-docusaurus-debugb-38-c84"
+    }
+  },
+  "/docs/__docusaurus/debug/metadata-bff": {
+    "__comp": "__comp---theme-debug-site-metadata-68-e-3d4",
+    "__context": {
+      "plugin": "plugin---docs-docusaurus-debugb-38-c84"
+    }
+  },
+  "/docs/__docusaurus/debug/registry-830": {
+    "__comp": "__comp---theme-debug-registry-679-501",
+    "__context": {
+      "plugin": "plugin---docs-docusaurus-debugb-38-c84"
+    }
+  },
+  "/docs/__docusaurus/debug/routes-13e": {
+    "__comp": "__comp---theme-debug-routes-946-699",
+    "__context": {
+      "plugin": "plugin---docs-docusaurus-debugb-38-c84"
+    }
+  },
+  "/docs/docs-c0e": {
+    "__comp": "__comp---theme-docs-root-5-e-9-0b6",
+    "__context": {
+      "plugin": "plugin---docs-docsaba-31e"
+    }
+  },
+  "/docs/docs-a16": {
+    "__comp": "__comp---theme-doc-version-roota-7-b-5de",
+    "__props": "__props---docs-docsa-20-f19"
+  },
+  "/docs/docs-aff": {
+    "__comp": "__comp---theme-doc-roota-94-67a"
+  },
+  "/docs/docs/api/http-api-0bc": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-http-apiefb-572"
+  },
+  "/docs/docs/api/sdk/-999": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-609-a7d"
+  },
+  "/docs/docs/api/sdk/index/-02c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-64-f-43e"
+  },
+  "/docs/docs/api/sdk/index/classes/AuthenticationError-a2c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-classes-authentication-error-213-f6e"
+  },
+  "/docs/docs/api/sdk/index/classes/ConfigurationError-d4d": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-classes-configuration-error-916-c16"
+  },
+  "/docs/docs/api/sdk/index/classes/ConnectionError-f88": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-classes-connection-error-750-01d"
+  },
+  "/docs/docs/api/sdk/index/classes/EtherPlyClient-790": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-classes-ether-ply-client-01-b-07c"
+  },
+  "/docs/docs/api/sdk/index/classes/EtherPlyError-1b2": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-classes-ether-ply-errora-81-fb2"
+  },
+  "/docs/docs/api/sdk/index/classes/MessageError-d78": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-classes-message-error-189-1a0"
+  },
+  "/docs/docs/api/sdk/index/classes/QueueOverflowError-aff": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-classes-queue-overflow-error-070-ece"
+  },
+  "/docs/docs/api/sdk/index/functions/parseMessage-bfc": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-functions-parse-message-816-352"
+  },
+  "/docs/docs/api/sdk/index/functions/truncate-3e3": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-functions-truncatec-9-f-ddf"
+  },
+  "/docs/docs/api/sdk/index/interfaces/EtherPlyConfig-d9f": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-interfaces-ether-ply-config-81-b-a75"
+  },
+  "/docs/docs/api/sdk/index/interfaces/InitMessage-e3c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-interfaces-init-messagec-55-970"
+  },
+  "/docs/docs/api/sdk/index/interfaces/Operation-883": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-interfaces-operationb-62-0d1"
+  },
+  "/docs/docs/api/sdk/index/interfaces/OperationMessage-609": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-interfaces-operation-message-1-f-1-c54"
+  },
+  "/docs/docs/api/sdk/index/type-aliases/ConnectionStatus-053": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-type-aliases-connection-status-124-e68"
+  },
+  "/docs/docs/api/sdk/index/type-aliases/EtherPlyMessage-c6a": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-type-aliases-ether-ply-message-2-ad-b1e"
+  },
+  "/docs/docs/api/sdk/index/type-aliases/MessageHandler-a7d": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-type-aliases-message-handler-362-dc3"
+  },
+  "/docs/docs/api/sdk/index/type-aliases/StatusHandler-e92": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-index-type-aliases-status-handlere-1-c-2a9"
+  },
+  "/docs/docs/api/sdk/react/-afb": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-7-e-1-34f"
+  },
+  "/docs/docs/api/sdk/react/functions/EtherPlyProvider-b79": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-functions-ether-ply-provider-694-f4c"
+  },
+  "/docs/docs/api/sdk/react/functions/useDocument-0cd": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-functions-use-documentd-85-f19"
+  },
+  "/docs/docs/api/sdk/react/functions/useEtherPly-0e1": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-functions-use-ether-plye-4-b-e47"
+  },
+  "/docs/docs/api/sdk/react/functions/useEtherPlyContext-ecd": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-functions-use-ether-ply-contextfc-4-a94"
+  },
+  "/docs/docs/api/sdk/react/functions/usePresence-321": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-functions-use-presence-6-a-9-ecc"
+  },
+  "/docs/docs/api/sdk/react/interfaces/EtherPlyProviderProps-266": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-interfaces-ether-ply-provider-propsaa-6-f1a"
+  },
+  "/docs/docs/api/sdk/react/interfaces/PresenceUser-97d": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-interfaces-presence-user-516-d07"
+  },
+  "/docs/docs/api/sdk/react/interfaces/UseDocumentOptions-fc2": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-interfaces-use-document-options-562-3f5"
+  },
+  "/docs/docs/api/sdk/react/interfaces/UseDocumentReturn-7d0": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-interfaces-use-document-return-8-da-f1d"
+  },
+  "/docs/docs/api/sdk/react/interfaces/UseEtherPlyOptions-2f7": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-interfaces-use-ether-ply-options-792-26e"
+  },
+  "/docs/docs/api/sdk/react/interfaces/UseEtherPlyReturn-e9c": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-interfaces-use-ether-ply-returnf-04-4dc"
+  },
+  "/docs/docs/api/sdk/react/interfaces/UsePresenceOptions-de6": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-api-sdk-react-interfaces-use-presence-options-886-771"
+  },
+  "/docs/docs/commercial_due_diligence-36b": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-commercial-due-diligence-6-c-0-14f"
+  },
+  "/docs/docs/concepts/architecture-61d": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-concepts-architecture-8-a-1-f95"
+  },
+  "/docs/docs/concepts/storage_namespaces-6c8": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-concepts-storage-namespaces-119-b5c"
+  },
+  "/docs/docs/deployment-244": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-deploymenta-37-018"
+  },
+  "/docs/docs/examples/cursors-c34": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-examples-cursors-879-e2c"
+  },
+  "/docs/docs/examples/iot-b9f": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-examples-iot-81-c-01f"
+  },
+  "/docs/docs/examples/kanban-28e": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-examples-kanban-1-af-8f9"
+  },
+  "/docs/docs/examples/text-editor-8f2": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-examples-text-editorb-31-252"
+  },
+  "/docs/docs/examples/voting-2ce": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-examples-votingd-54-61e"
+  },
+  "/docs/docs/governance-1a8": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-governance-1-ba-b0c"
+  },
+  "/docs/docs/integrate-0e3": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-integrate-59-b-10c"
+  },
+  "/docs/docs/intro-2e5": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-intro-0-e-3-261"
+  },
+  "/docs/docs/manual/stripe_integration-f20": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-manual-stripe-integration-880-257"
+  },
+  "/docs/docs/quality_audit-51d": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-quality-audit-565-aac"
+  },
+  "/docs/docs/quickstart-react-5c8": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-quickstart-react-524-aa0"
+  },
+  "/docs/docs/roadmap-362": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-roadmap-0-df-7d0"
+  },
+  "/docs/docs/strategy/roadmap-913": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-strategy-roadmap-84-b-3d6"
+  },
+  "/docs/docs/troubleshooting-0e0": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-docs-troubleshooting-9-d-9-d90"
+  }
+}
