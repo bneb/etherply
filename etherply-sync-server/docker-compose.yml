@@ -5,9 +5,32 @@
 #   docker-compose logs -f
 #   docker-compose down
 #
+# Multi-Region Replication:
+#   This compose file includes NATS JetStream for cross-region replication testing.
+#   To test multi-instance sync, use:
+#     docker-compose --profile multi-region up -d
+#
 # For production, use Kubernetes or standalone Docker with proper secrets management.
 
 services:
+  # NATS JetStream for multi-region replication messaging
+  nats:
+    image: nats:2-alpine
+    command: [ "-js", "-m", "8222" ]
+    ports:
+      - "4222:4222" # Client connections
+      - "8222:8222" # Monitoring
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8222/healthz" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    profiles:
+      - multi-region
+      - nats-only
+
+  # Primary sync server instance
   sync-server:
     build:
       context: .
@@ -21,16 +44,83 @@ services:
       - SHUTDOWN_TIMEOUT_SECONDS=30
       - WEBHOOK_URL=${WEBHOOK_URL:-}
     volumes:
-      # Persist BadgerDB data across restarts
-      - etherply-data:/data
+      - etherply-data-1:/data
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/healthz"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/healthz" ]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
     restart: unless-stopped
 
+  # Sync server with multi-region replication enabled (region 1)
+  sync-server-region1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - PORT=8080
+      - ETHERPLY_JWT_SECRET=${ETHERPLY_JWT_SECRET:-dev-secret-change-in-production}
+      - BADGER_PATH=/data/badger.db
+      - SHUTDOWN_TIMEOUT_SECONDS=30
+      - WEBHOOK_URL=${WEBHOOK_URL:-}
+      # Multi-region replication config
+      - NATS_URL=nats://nats:4222
+      - REGION=us-east-1
+      - SERVER_ID=sync-us-east-1
+    volumes:
+      - etherply-data-region1:/data
+    depends_on:
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/healthz" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    profiles:
+      - multi-region
+
+  # Sync server with multi-region replication enabled (region 2)
+  sync-server-region2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - PORT=8080
+      - ETHERPLY_JWT_SECRET=${ETHERPLY_JWT_SECRET:-dev-secret-change-in-production}
+      - BADGER_PATH=/data/badger.db
+      - SHUTDOWN_TIMEOUT_SECONDS=30
+      - WEBHOOK_URL=${WEBHOOK_URL:-}
+      # Multi-region replication config
+      - NATS_URL=nats://nats:4222
+      - REGION=us-west-2
+      - SERVER_ID=sync-us-west-2
+    volumes:
+      - etherply-data-region2:/data
+    depends_on:
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/healthz" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    profiles:
+      - multi-region
+
 volumes:
-  etherply-data:
+  etherply-data-1:
+    driver: local
+  etherply-data-region1:
+    driver: local
+  etherply-data-region2:
     driver: local

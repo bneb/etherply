@@ -7,6 +7,7 @@
 package crdt
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -15,6 +16,7 @@ import (
 	"time"
 
 	"github.com/automerge/automerge-go"
+	"github.com/bneb/etherply/etherply-sync-server/internal/replication"
 	"github.com/bneb/etherply/etherply-sync-server/internal/store"
 )
 
@@ -41,10 +43,17 @@ type Change struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
+// ReplicationCallback is invoked when changes are made locally and need to be broadcast.
+// This indirection allows the Engine to remain decoupled from the transport layer.
+type ReplicationCallback func(workspaceID string, changes []byte) error
+
 type Engine struct {
-	store  store.Store
-	logger *slog.Logger
-	mu     sync.Mutex // Global lock for MVP. Ideally should be per-workspace.
+	store      store.Store
+	logger     *slog.Logger
+	mu         sync.Mutex // Global lock for MVP. Ideally should be per-workspace.
+	replicator replication.Replicator
+	region     string
+	serverID   string
 }
 
 func NewEngine(s store.Store) *Engine {
@@ -54,6 +63,27 @@ func NewEngine(s store.Store) *Engine {
 		store:  s,
 		logger: logger,
 	}
+}
+
+// SetReplicator enables multi-region replication.
+// When set, the engine will broadcast local changes to peer regions.
+func (e *Engine) SetReplicator(r replication.Replicator, region, serverID string) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.replicator = r
+	e.region = region
+	e.serverID = serverID
+	e.logger.Info("replication_enabled",
+		slog.String("region", region),
+		slog.String("server_id", serverID),
+	)
+}
+
+// HasReplicator returns true if multi-region replication is configured.
+func (e *Engine) HasReplicator() bool {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.replicator != nil
 }
 
 // fireSyncOperationMetric is a helper to track operation metrics (PostHog stub)
@@ -154,6 +184,24 @@ func (e *Engine) ProcessOperation(op Operation) error {
 	err = e.store.Set(op.WorkspaceID, "automerge_root", newBytes)
 	if err != nil {
 		return fmt.Errorf("failed to persist state: %w", err)
+	}
+
+	// 5. Broadcast to peer regions (if replication is enabled)
+	if e.replicator != nil {
+		event := replication.ChangeEvent{
+			WorkspaceID:    op.WorkspaceID,
+			Changes:        newBytes,
+			OriginRegion:   e.region,
+			OriginServerID: e.serverID,
+			Timestamp:      time.Now(),
+		}
+		if err := e.replicator.Broadcast(context.Background(), event); err != nil {
+			// Non-fatal: local operation still succeeds, log error for alerting
+			e.logger.Error("replication_broadcast_failed",
+				slog.String("workspace_id", op.WorkspaceID),
+				slog.Any("error", err),
+			)
+		}
 	}
 
 	latency := time.Since(start).Milliseconds()
@@ -330,6 +378,83 @@ func (e *Engine) Stats() (map[string]interface{}, error) {
 	return map[string]interface{}{
 		"store": storeStats,
 	}, nil
+}
+
+// ApplyRemoteChanges merges changes received from peer replicas.
+// This is the receiving side of multi-region replication.
+// It loads the current document, merges the remote changes, and saves the result.
+//
+// Note: Automerge's merge operation is idempotent and commutative, meaning
+// applying the same changes multiple times or in different orders will
+// always result in the same final state.
+func (e *Engine) ApplyRemoteChanges(workspaceID string, remoteDoc []byte) error {
+	if workspaceID == "" {
+		return fmt.Errorf("workspace_id is required")
+	}
+	if len(remoteDoc) == 0 {
+		return nil // No changes to apply
+	}
+
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	// Load the remote document
+	incoming, err := automerge.Load(remoteDoc)
+	if err != nil {
+		return fmt.Errorf("failed to load remote document: %w", err)
+	}
+
+	// Load or create local document
+	var local *automerge.Doc
+	val, exists, err := e.store.Get(workspaceID, "automerge_root")
+	if err != nil {
+		return fmt.Errorf("failed to load local state: %w", err)
+	}
+
+	if exists {
+		data, ok := val.([]byte)
+		if !ok {
+			// Corruption: reset to remote state
+			e.logger.Warn("local_state_corruption_during_merge",
+				slog.String("workspace_id", workspaceID),
+			)
+			local, err = incoming.Fork()
+			if err != nil {
+				return fmt.Errorf("failed to fork remote document: %w", err)
+			}
+		} else {
+			local, err = automerge.Load(data)
+			if err != nil {
+				return fmt.Errorf("failed to load local document: %w", err)
+			}
+		}
+	} else {
+		// No local state, use remote as initial state
+		local, err = incoming.Fork()
+		if err != nil {
+			return fmt.Errorf("failed to fork remote document: %w", err)
+		}
+	}
+
+	// Merge remote changes into local document
+	// Automerge guarantees convergence regardless of merge order
+	_, err = local.Merge(incoming)
+	if err != nil {
+		return fmt.Errorf("failed to merge remote changes: %w", err)
+	}
+
+	// Save the merged result
+	mergedBytes := local.Save()
+	if err := e.store.Set(workspaceID, "automerge_root", mergedBytes); err != nil {
+		return fmt.Errorf("failed to persist merged state: %w", err)
+	}
+
+	e.logger.Debug("remote_changes_applied",
+		slog.String("workspace_id", workspaceID),
+		slog.Int("merged_size_bytes", len(mergedBytes)),
+	)
+
+	return nil
 }
 
 // ToJSON helper for debugging

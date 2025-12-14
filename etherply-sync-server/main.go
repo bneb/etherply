@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
 	"github.com/bneb/etherply/etherply-sync-server/internal/presence"
 	"github.com/bneb/etherply/etherply-sync-server/internal/pubsub"
+	"github.com/bneb/etherply/etherply-sync-server/internal/replication"
 	"github.com/bneb/etherply/etherply-sync-server/internal/server"
 	"github.com/bneb/etherply/etherply-sync-server/internal/store"
 	"github.com/bneb/etherply/etherply-sync-server/internal/webhook"
@@ -22,12 +24,14 @@ import (
 // main is the entry point for the EtherPly Sync Server.
 //
 // Architecture Overview:
+//
 //  1. Config: Reads env vars (PORT, JWT_SECRET, SHUTDOWN_TIMEOUT_SECONDS).
 //  2. Persistence: Initializes BadgerDB for durability.
 //  3. Engine: Starts the CRDT Engine which manages state per workspace.
-//  4. Presence: Starts the ephemeral Presence Manager.
-//  5. HTTP: Sets up routes and health checks.
-//  6. Graceful Shutdown: Handles SIGTERM/SIGINT for clean connection draining.
+//  4. Replication: Optionally enables multi-region replication via NATS.
+//  5. Presence: Starts the ephemeral Presence Manager.
+//  6. HTTP: Sets up routes and health checks.
+//  7. Graceful Shutdown: Handles SIGTERM/SIGINT for clean connection draining.
 //
 // This server is designed to be stateless regarding "sessions" but stateful regarding "document data".
 // It can be deployed to PaaS like Fly.io or Kubernetes with proper health probes.
@@ -70,6 +74,46 @@ func main() {
 
 	// Initialize CRDT Engine
 	crdtEngine := crdt.NewEngine(stateStore)
+
+	// Initialize Multi-Region Replication (if configured)
+	// NATS_URL: comma-separated list of NATS server URLs
+	// REGION: geographic region identifier (e.g., "us-east-1")
+	// SERVER_ID: unique identifier for this server instance
+	var replicator *replication.NATSReplicator
+	natsURL := os.Getenv("NATS_URL")
+	if natsURL != "" {
+		region := os.Getenv("REGION")
+		if region == "" {
+			region = "default"
+		}
+		serverID := os.Getenv("SERVER_ID")
+		if serverID == "" {
+			serverID = "sync-server-" + port
+		}
+
+		natsURLs := strings.Split(natsURL, ",")
+		replicator, err = replication.NewNATSReplicator(replication.Config{
+			ServerID: serverID,
+			Region:   region,
+			NATSURLs: natsURLs,
+		})
+		if err != nil {
+			log.Fatalf("Failed to initialize NATS replicator: %v", err)
+		}
+		defer replicator.Close()
+
+		// Wire replication to CRDT engine
+		crdtEngine.SetReplicator(replicator, region, serverID)
+
+		// Subscribe to incoming changes from peer replicas
+		if err := replicator.Subscribe(func(event replication.ChangeEvent) error {
+			return crdtEngine.ApplyRemoteChanges(event.WorkspaceID, event.Changes)
+		}); err != nil {
+			log.Fatalf("Failed to subscribe to replication events: %v", err)
+		}
+
+		log.Printf("Multi-region replication enabled: region=%s, server_id=%s", region, serverID)
+	}
 
 	// Initialize Presence Manager (Ephemeral, In-Memory)
 	presenceManager := presence.NewManager()

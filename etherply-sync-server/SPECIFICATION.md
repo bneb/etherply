@@ -101,7 +101,7 @@ stateDiagram-v2
 ## 5. Out of Scope (Current Version)
 
 - ~~Complex RBAC~~ **IMPLEMENTED** (read/write scopes)
-- **Multi-Region Replication** - Single instance per workspace
+- ~~Multi-Region Replication~~ **IMPLEMENTED** (via NATS JetStream)
 - ~~History/Undo~~ **IMPLEMENTED** (via `/v1/history/{workspace_id}`)
 - **Schema Validation** - Server does not validate `value` content
 
