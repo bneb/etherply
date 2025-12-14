@@ -16,6 +16,18 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Examples',
+      items: [
+        'examples/text-editor',
+        'examples/kanban',
+        'examples/cursors',
+        'examples/voting',
+        'examples/iot',
+      ],
+    },
+    'troubleshooting',
+    {
+      type: 'category',
       label: 'API Reference',
       link: {
         type: 'generated-index',
