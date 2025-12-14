@@ -29,5 +29,9 @@
 
 export { useEtherPly } from './useEtherPly';
 export { useDocument } from './useDocument';
+export { usePresence } from './usePresence';
 export { EtherPlyProvider, useEtherPlyContext } from './context';
 export type { UseEtherPlyOptions, UseEtherPlyReturn } from './useEtherPly';
+export type { UseDocumentOptions, UseDocumentReturn } from './useDocument';
+export type { UsePresenceOptions, PresenceUser } from './usePresence';
+export type { EtherPlyProviderProps } from './context';

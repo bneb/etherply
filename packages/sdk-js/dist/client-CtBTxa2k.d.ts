@@ -330,6 +330,16 @@ declare class EtherPlyClient {
      */
     close(): void;
     /**
+     * Fetches current presence information for the workspace.
+     *
+     * @returns A promise resolving to a list of active users.
+     */
+    getPresence(): Promise<Array<{
+        userId: string;
+        status: string;
+        last_seen: string;
+    }>>;
+    /**
      * Permanently destroys the client, releasing all resources.
      *
      * After calling this, the client cannot be reconnected.

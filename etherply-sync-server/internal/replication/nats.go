@@ -16,6 +16,20 @@ import (
 	"github.com/nats-io/nats.go/jetstream"
 )
 
+const (
+	// defaultStreamRetention is the max duration to keep messages in the stream.
+	defaultStreamRetention = 24 * time.Hour
+
+	// defaultMaxBytes is the maximum size of the stream (1GB).
+	defaultMaxBytes = 1024 * 1024 * 1024
+
+	// defaultFetchBatch is the number of messages to fetch in one batch.
+	defaultFetchBatch = 10
+
+	// defaultFetchTimeout is the max wait time for a fetch request.
+	defaultFetchTimeout = 5 * time.Second
+)
+
 // NATSReplicator implements Replicator using NATS JetStream.
 type NATSReplicator struct {
 	nc       *nats.Conn
@@ -98,9 +112,9 @@ func NewNATSReplicator(cfg Config) (*NATSReplicator, error) {
 		Description: "EtherPly cross-region replication events",
 		Subjects:    []string{fmt.Sprintf("%s.>", cfg.StreamName)},
 		Retention:   jetstream.LimitsPolicy,
-		MaxAge:      24 * time.Hour,     // Keep messages for 24 hours
-		MaxBytes:    1024 * 1024 * 1024, // 1GB max
-		Replicas:    1,                  // Single replica for now; increase for HA
+		MaxAge:      defaultStreamRetention,
+		MaxBytes:    defaultMaxBytes,
+		Replicas:    1, // Single replica for now; increase for HA
 		Storage:     jetstream.FileStorage,
 	})
 	if err != nil {
@@ -209,7 +223,7 @@ func (r *NATSReplicator) consumeLoop(ctx context.Context, handler ChangeHandler)
 		}
 
 		// Fetch messages with a timeout
-		msgs, err := r.consumer.Fetch(10, jetstream.FetchMaxWait(5*time.Second))
+		msgs, err := r.consumer.Fetch(defaultFetchBatch, jetstream.FetchMaxWait(defaultFetchTimeout))
 		if err != nil {
 			if ctx.Err() != nil {
 				return // Context cancelled, exit gracefully

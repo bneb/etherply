@@ -4,7 +4,7 @@
 
 # Class: EtherPlyError
 
-Defined in: [src/errors.ts:10](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L10)
+Defined in: [src/errors.ts:10](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L10)
 
 Base class for all EtherPly errors.
 
@@ -26,7 +26,7 @@ Base class for all EtherPly errors.
 
 > **new EtherPlyError**(`message`, `code`): `EtherPlyError`
 
-Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L11)
+Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L11)
 
 #### Parameters
 
@@ -49,7 +49,7 @@ Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/303e876d3c2
 
 > `readonly` **code**: `string`
 
-Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L11)
+Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L11)
 
 ***
 

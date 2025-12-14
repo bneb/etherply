@@ -6,7 +6,7 @@
 
 > **EtherPlyProvider**(`__namedParameters`): `Element`
 
-Defined in: [src/react/context.tsx:55](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/context.tsx#L55)
+Defined in: [src/react/context.tsx:55](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/context.tsx#L55)
 
 Provider component that creates and manages an EtherPly client.
 
@@ -17,7 +17,7 @@ a single client instance across multiple components.
 
 | Parameter | Type |
 | ------ | ------ |
-| `__namedParameters` | `EtherPlyProviderProps` |
+| `__namedParameters` | [`EtherPlyProviderProps`](../interfaces/EtherPlyProviderProps.md) |
 
 ## Returns
 

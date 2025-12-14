@@ -4,7 +4,7 @@
 
 # Class: QueueOverflowError
 
-Defined in: [src/errors.ts:71](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L71)
+Defined in: [src/errors.ts:71](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L71)
 
 Thrown when the operation queue exceeds capacity.
 
@@ -18,7 +18,7 @@ Thrown when the operation queue exceeds capacity.
 
 > **new QueueOverflowError**(`maxSize`): `QueueOverflowError`
 
-Defined in: [src/errors.ts:72](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L72)
+Defined in: [src/errors.ts:72](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L72)
 
 #### Parameters
 
@@ -40,7 +40,7 @@ Defined in: [src/errors.ts:72](https://github.com/bneb/etherply/blob/303e876d3c2
 
 > `readonly` **code**: `string`
 
-Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L11)
+Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L11)
 
 #### Inherited from
 

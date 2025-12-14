@@ -32,8 +32,13 @@ function App() {
 
 ## Interfaces
 
+- [EtherPlyProviderProps](interfaces/EtherPlyProviderProps.md)
+- [PresenceUser](interfaces/PresenceUser.md)
+- [UseDocumentOptions](interfaces/UseDocumentOptions.md)
+- [UseDocumentReturn](interfaces/UseDocumentReturn.md)
 - [UseEtherPlyOptions](interfaces/UseEtherPlyOptions.md)
 - [UseEtherPlyReturn](interfaces/UseEtherPlyReturn.md)
+- [UsePresenceOptions](interfaces/UsePresenceOptions.md)
 
 ## Functions
 
@@ -41,3 +46,4 @@ function App() {
 - [useDocument](functions/useDocument.md)
 - [useEtherPly](functions/useEtherPly.md)
 - [useEtherPlyContext](functions/useEtherPlyContext.md)
+- [usePresence](functions/usePresence.md)

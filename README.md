@@ -1,7 +1,7 @@
 # EtherPly
-> "The Heroku for Multiplayer."
+> "Postgres for Realtime."
 
-EtherPly is a managed state synchronization engine that turns static apps into collaborative, real-time platforms. It provides a conflict-free, persistent, and scalable backend for real-time applications.
+EtherPly is a **contract-grade** state synchronization engine. It turns static apps into collaborative platforms without compromising on data integrity. Unlike other "magic" solutions that lose data in edge cases, EtherPly relies on **ACID-compliant on-disk persistence (BadgerDB)** and mathematically correct CRDT merging. Don't lose your users' data in the WebSocket void.
 
 ## 📜 Governance & Standards (The "Constitution")
 We operate as a high-discipline engineering team. Read the protocols before contributing.

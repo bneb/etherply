@@ -6,7 +6,7 @@
 
 > **truncate**(`str`, `maxLength`): `string`
 
-Defined in: [src/validation.ts:140](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/validation.ts#L140)
+Defined in: [src/validation.ts:140](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/validation.ts#L140)
 
 Safely truncates a string for logging/error messages.
 Prevents log explosion from large payloads.

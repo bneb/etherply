@@ -1,4 +1,4 @@
-import { b as EtherPlyConfig, C as ConnectionStatus, a as EtherPlyClient } from '../client-Dg1Ob3EQ.mjs';
+import { b as EtherPlyConfig, C as ConnectionStatus, a as EtherPlyClient } from '../client-CtBTxa2k.mjs';
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import { ReactNode } from 'react';
 
@@ -188,6 +188,28 @@ interface UseDocumentReturn<T> {
  */
 declare function useDocument<T = unknown>(options: UseDocumentOptions<T>): UseDocumentReturn<T>;
 
+interface PresenceUser {
+    userId: string;
+    status: string;
+    last_seen: string;
+}
+interface UsePresenceOptions {
+    /**
+     * Polling interval in milliseconds.
+     * Default: 10000 (10 seconds)
+     */
+    interval?: number;
+}
+/**
+ * Hook to get the current presence list for the workspace.
+ *
+ * Note: This currently uses polling every 10 seconds.
+ *
+ * @param options - Configuration options
+ * @returns Array of active users
+ */
+declare function usePresence(options?: UsePresenceOptions): PresenceUser[];
+
 /**
  * Props for EtherPlyProvider.
  */
@@ -254,4 +276,4 @@ declare function EtherPlyProvider({ config, children, autoConnect, }: EtherPlyPr
  */
 declare function useEtherPlyContext(): EtherPlyClient;
 
-export { EtherPlyProvider, type UseEtherPlyOptions, type UseEtherPlyReturn, useDocument, useEtherPly, useEtherPlyContext };
+export { EtherPlyProvider, type UseEtherPlyOptions, type UseEtherPlyReturn, useDocument, useEtherPly, useEtherPlyContext, usePresence };

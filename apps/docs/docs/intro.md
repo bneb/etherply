@@ -2,13 +2,14 @@
 
 > "Simplicity is the ultimate sophistication." — Leonardo da Vinci
 
-You are here because you want to build something **alive**. 
-The web we grew up with was a library—static pages, cached assets, solitary experiences. 
+You are here because you need to synchronize **complex state**.
+The web we grew up with was a library—static pages, cached assets, solitary experiences.
 We are building the **Living Web**. Where cursors dance, text flows between screens, and state is a shared hallucination.
 
-EtherPly is the engine for this new reality. It is not just a WebSocket wrapper; it is an opinionated, conflict-free, friction-less sync engine designed for the high-speed collision of ideas.
+EtherPly is **Postgres for Realtime**. It is not just a WebSocket wrapper; it is an opinionated, conflict-free sync engine designed for heavy-duty applications like Kanban boards, Design tools, and IDEs.
 
 ## The Ritual (Installation)
+
 
 We believe in "Zero Friction." You should be multiplayer in the time it takes to brew a pour-over.
 

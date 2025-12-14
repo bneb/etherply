@@ -639,6 +639,27 @@ export class EtherPlyClient {
     }
 
     /**
+     * Fetches current presence information for the workspace.
+     * 
+     * @returns A promise resolving to a list of active users.
+     */
+    async getPresence(): Promise<Array<{ userId: string; status: string; last_seen: string }>> {
+        const url = this.config.serverUrl.replace(/\/+$/, '') + `/v1/presence/${this.config.workspaceId}`;
+
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${this.config.token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch presence: ${response.statusText}`);
+        }
+
+        return response.json();
+    }
+
+    /**
      * Permanently destroys the client, releasing all resources.
      * 
      * After calling this, the client cannot be reconnected.

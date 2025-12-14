@@ -4,7 +4,7 @@
 
 # Interface: UseEtherPlyReturn
 
-Defined in: [src/react/useEtherPly.tsx:28](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L28)
+Defined in: [src/react/useEtherPly.tsx:28](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L28)
 
 Return value of the useEtherPly hook.
 
@@ -14,7 +14,7 @@ Return value of the useEtherPly hook.
 
 > **client**: [`EtherPlyClient`](../../index/classes/EtherPlyClient.md)
 
-Defined in: [src/react/useEtherPly.tsx:57](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L57)
+Defined in: [src/react/useEtherPly.tsx:57](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L57)
 
 The underlying EtherPly client instance.
 
@@ -24,7 +24,7 @@ The underlying EtherPly client instance.
 
 > **connect**: () => `Promise`\<`void`\>
 
-Defined in: [src/react/useEtherPly.tsx:62](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L62)
+Defined in: [src/react/useEtherPly.tsx:62](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L62)
 
 Manually connect to the server.
 
@@ -38,7 +38,7 @@ Manually connect to the server.
 
 > **disconnect**: () => `void`
 
-Defined in: [src/react/useEtherPly.tsx:67](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L67)
+Defined in: [src/react/useEtherPly.tsx:67](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L67)
 
 Manually disconnect from the server.
 
@@ -52,7 +52,7 @@ Manually disconnect from the server.
 
 > **get**: \<`T`\>(`key`) => `T` \| `undefined`
 
-Defined in: [src/react/useEtherPly.tsx:42](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L42)
+Defined in: [src/react/useEtherPly.tsx:42](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L42)
 
 Get a value from the workspace.
 
@@ -78,7 +78,7 @@ Get a value from the workspace.
 
 > **isConnected**: `boolean`
 
-Defined in: [src/react/useEtherPly.tsx:52](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L52)
+Defined in: [src/react/useEtherPly.tsx:52](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L52)
 
 Whether the client is connected.
 
@@ -88,7 +88,7 @@ Whether the client is connected.
 
 > **set**: (`key`, `value`) => `void`
 
-Defined in: [src/react/useEtherPly.tsx:37](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L37)
+Defined in: [src/react/useEtherPly.tsx:37](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L37)
 
 Set a value in the workspace.
 
@@ -109,7 +109,7 @@ Set a value in the workspace.
 
 > **state**: `Record`\<`string`, `unknown`\>
 
-Defined in: [src/react/useEtherPly.tsx:32](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L32)
+Defined in: [src/react/useEtherPly.tsx:32](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L32)
 
 Current state of the workspace as a reactive object.
 
@@ -119,6 +119,6 @@ Current state of the workspace as a reactive object.
 
 > **status**: [`ConnectionStatus`](../../index/type-aliases/ConnectionStatus.md)
 
-Defined in: [src/react/useEtherPly.tsx:47](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L47)
+Defined in: [src/react/useEtherPly.tsx:47](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L47)
 
 Current connection status.

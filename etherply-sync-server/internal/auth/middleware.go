@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 )
@@ -45,14 +45,14 @@ func Middleware(next http.Handler) http.Handler {
 		// 3. Validation
 		if token == "" {
 			// STRICT MODE: No token = 401. No more "Demo Convenience".
-			log.Println("[AUTH] Rejected request: Missing Authorization token.")
+			slog.Warn("auth_rejected", "reason", "missing_token")
 			http.Error(w, "Unauthorized: Bearer token required", http.StatusUnauthorized)
 			return
 		}
 
 		claims, err := ValidateToken(token)
 		if err != nil {
-			log.Printf("[AUTH] Rejected request: Invalid token (%v)", err)
+			slog.Warn("auth_rejected", "reason", "invalid_token", "error", err)
 			http.Error(w, "Unauthorized: Invalid token", http.StatusUnauthorized)
 			return
 		}

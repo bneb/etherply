@@ -571,6 +571,23 @@ var EtherPlyClient = class {
     this.disconnect();
   }
   /**
+   * Fetches current presence information for the workspace.
+   * 
+   * @returns A promise resolving to a list of active users.
+   */
+  async getPresence() {
+    const url = this.config.serverUrl.replace(/\/+$/, "") + `/v1/presence/${this.config.workspaceId}`;
+    const response = await fetch(url, {
+      headers: {
+        "Authorization": `Bearer ${this.config.token}`
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch presence: ${response.statusText}`);
+    }
+    return response.json();
+  }
+  /**
    * Permanently destroys the client, releasing all resources.
    * 
    * After calling this, the client cannot be reconnected.
@@ -715,7 +732,39 @@ function useDocument(options) {
     isLoaded
   };
 }
+function usePresence(options = {}) {
+  const { interval = 1e4 } = options;
+  const client = useEtherPlyContext();
+  const [users, setUsers] = useState([]);
+  const savedCallback = useRef();
+  useEffect(() => {
+    const fetchPresence = async () => {
+      if (client.getStatus() !== "CONNECTED") return;
+      try {
+        const data = await client.getPresence();
+        setUsers(data);
+      } catch (err) {
+        console.warn("Failed to fetch presence:", err);
+      }
+    };
+    savedCallback.current = fetchPresence;
+    fetchPresence();
+  }, [client]);
+  useEffect(() => {
+    function tick() {
+      if (savedCallback.current) {
+        savedCallback.current();
+      }
+    }
+    if (interval !== null && interval !== void 0) {
+      const id = setInterval(tick, interval);
+      return () => clearInterval(id);
+    }
+    return void 0;
+  }, [interval]);
+  return users;
+}
 
-export { EtherPlyProvider, useDocument, useEtherPly, useEtherPlyContext };
+export { EtherPlyProvider, useDocument, useEtherPly, useEtherPlyContext, usePresence };
 //# sourceMappingURL=index.mjs.map
 //# sourceMappingURL=index.mjs.map

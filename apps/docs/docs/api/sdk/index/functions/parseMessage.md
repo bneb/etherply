@@ -6,7 +6,7 @@
 
 > **parseMessage**(`raw`): [`EtherPlyMessage`](../type-aliases/EtherPlyMessage.md)
 
-Defined in: [src/validation.ts:95](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/validation.ts#L95)
+Defined in: [src/validation.ts:95](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/validation.ts#L95)
 
 Parses and validates a raw message string from the server.
 

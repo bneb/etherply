@@ -1,6 +1,6 @@
 module github.com/bneb/etherply/etherply-sync-server
 
-go 1.23.0
+go 1.24.0
 
 require (
 	github.com/automerge/automerge-go v0.0.0-20241030180337-6fb4f2d08244
@@ -10,6 +10,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/nats-io/nats.go v1.47.0
 	github.com/prometheus/client_golang v1.23.2
+	golang.org/x/time v0.14.0
 )
 
 require (

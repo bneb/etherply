@@ -51,7 +51,7 @@
 - [x] **Granular ACLs:** "Read-only" vs "Write" access tokens.
 - [x] **Webhooks:** Events for `client.connect`, `doc.update`.
 
-### 3. Developer Console
+### 3. Developer Console (Priority: CRITICAL)
 - [x] **Dashboard:** View active connections, document storage size.
 - [x] **History API:** REST endpoint to retrieve document history/snapshots.
 
@@ -65,9 +65,9 @@
 ---
 
 ## Q4 2026: Operation Stripe (The "Developer Experience" Push)
-**Goal:** Best-in-class Developer Experience. Win on DX, not features.  
-**Success Metric:** 50 production apps using EtherPly. 10 paying customers on Startup tier.  
-**Philosophy:** Stripe didn't beat PayPal with better technology—they beat them with 7 lines of code, world-class docs, and obsessive developer empathy.
+**Goal:** Best-in-class Developer Experience & Trust. Win on "It Just Works."
+**Success Metric:** 50 production apps using EtherPly. 10 paying customers on Startup tier.
+**Philosophy:** We are not just building a library; we are building a *database*. Developers trust Postgres with their data; they must trust EtherPly with their real-time state.
 
 > :::important
 > This phase directly addresses the Commercial Due Diligence feedback: "No JS SDK = no market" and "Get 3 paying customers."
@@ -130,10 +130,11 @@
 - [ ] **Grafana Dashboard Template:** Ready-to-import JSON
 
 ### 6. Pricing & Monetization
-*Current State:* $29/mo (underpriced per DD report).  
+*Current State:* $29/mo (underpriced per DD report).
 *Target State:* Value-based pricing aligned with market.
 
-- [ ] **Update Startup Tier:** $29 → **$49/mo**
-- [ ] **Add Enterprise Anchor:** "Starting at $499/mo"
-- [ ] **Usage-Based Add-On:** $0.001/operation for high-volume users
-- [ ] **Stripe Integration:** Self-serve checkout
+- [ ] **Hobby Tier:** $0/dev (Free forever for non-commercial)
+- [ ] **Scale-Up Tier:** **$499/mo** (Starting Price, Volume-based)
+- [ ] **Enterprise:** **Contact Sales** (VPC, SSO, Audit Logs, custom SLA)
+- [ ] **Stripe Integration:** Self-serve checkout for Scale-Up
+

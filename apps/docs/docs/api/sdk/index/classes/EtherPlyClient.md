@@ -4,7 +4,7 @@
 
 # Class: EtherPlyClient
 
-Defined in: [src/client.ts:88](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L88)
+Defined in: [src/client.ts:88](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L88)
 
 EtherPly client for real-time synchronization.
 
@@ -45,7 +45,7 @@ client.set('greeting', 'Hello!');
 
 > **new EtherPlyClient**(`config`): `EtherPlyClient`
 
-Defined in: [src/client.ts:108](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L108)
+Defined in: [src/client.ts:108](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L108)
 
 Creates a new EtherPly client instance.
 
@@ -69,7 +69,7 @@ If workspaceId or token is missing
 
 > **close**(): `void`
 
-Defined in: [src/client.ts:637](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L637)
+Defined in: [src/client.ts:637](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L637)
 
 Alias for disconnect() for API consistency.
 
@@ -83,7 +83,7 @@ Alias for disconnect() for API consistency.
 
 > **connect**(): `Promise`\<`void`\>
 
-Defined in: [src/client.ts:220](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L220)
+Defined in: [src/client.ts:220](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L220)
 
 Connects to the EtherPly server.
 
@@ -103,7 +103,7 @@ If connection fails or times out
 
 > **destroy**(): `void`
 
-Defined in: [src/client.ts:647](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L647)
+Defined in: [src/client.ts:668](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L668)
 
 Permanently destroys the client, releasing all resources.
 
@@ -120,7 +120,7 @@ Use this for cleanup in React useEffect or similar.
 
 > **disconnect**(): `void`
 
-Defined in: [src/client.ts:621](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L621)
+Defined in: [src/client.ts:621](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L621)
 
 Disconnects from the server.
 
@@ -136,7 +136,7 @@ After calling this, you can call `connect()` again to reconnect.
 
 > **get**\<`T`\>(`key`): `T` \| `undefined`
 
-Defined in: [src/client.ts:487](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L487)
+Defined in: [src/client.ts:487](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L487)
 
 Gets the current value of a key from local state.
 
@@ -163,11 +163,27 @@ The value, or undefined if not found
 
 ***
 
+### getPresence()
+
+> **getPresence**(): `Promise`\<`object`[]\>
+
+Defined in: [src/client.ts:646](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L646)
+
+Fetches current presence information for the workspace.
+
+#### Returns
+
+`Promise`\<`object`[]\>
+
+A promise resolving to a list of active users.
+
+***
+
 ### getQueueSize()
 
 > **getQueueSize**(): `number`
 
-Defined in: [src/client.ts:612](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L612)
+Defined in: [src/client.ts:612](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L612)
 
 Gets the number of operations in the queue.
 
@@ -181,7 +197,7 @@ Gets the number of operations in the queue.
 
 > **getState**(): `Record`\<`string`, `unknown`\>
 
-Defined in: [src/client.ts:496](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L496)
+Defined in: [src/client.ts:496](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L496)
 
 Gets the entire current state of the workspace.
 
@@ -197,7 +213,7 @@ A shallow copy of the current state
 
 > **getStatus**(): [`ConnectionStatus`](../type-aliases/ConnectionStatus.md)
 
-Defined in: [src/client.ts:605](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L605)
+Defined in: [src/client.ts:605](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L605)
 
 Gets the current connection status.
 
@@ -211,7 +227,7 @@ Gets the current connection status.
 
 > **onMessage**(`handler`): () => `void`
 
-Defined in: [src/client.ts:566](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L566)
+Defined in: [src/client.ts:566](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L566)
 
 Subscribes to incoming messages.
 
@@ -237,7 +253,7 @@ A cleanup function to unsubscribe
 
 > **onStatusChange**(`handler`): () => `void`
 
-Defined in: [src/client.ts:585](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L585)
+Defined in: [src/client.ts:585](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L585)
 
 Subscribes to connection status changes.
 
@@ -265,7 +281,7 @@ A cleanup function to unsubscribe
 
 > **sendOperation**(`key`, `value`): `void`
 
-Defined in: [src/client.ts:508](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L508)
+Defined in: [src/client.ts:508](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L508)
 
 Sends an operation to update a key-value pair.
 
@@ -288,7 +304,7 @@ If not connected, the operation is queued and sent when reconnected.
 
 > **set**(`key`, `value`): `void`
 
-Defined in: [src/client.ts:471](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/client.ts#L471)
+Defined in: [src/client.ts:471](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/client.ts#L471)
 
 Sets a key-value pair in the workspace.
 

@@ -6,7 +6,7 @@
 
 > **useEtherPly**(`options`): [`UseEtherPlyReturn`](../interfaces/UseEtherPlyReturn.md)
 
-Defined in: [src/react/useEtherPly.tsx:110](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useEtherPly.tsx#L110)
+Defined in: [src/react/useEtherPly.tsx:110](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useEtherPly.tsx#L110)
 
 React hook for real-time synchronization with EtherPly.
 

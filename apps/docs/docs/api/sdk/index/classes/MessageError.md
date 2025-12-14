@@ -4,7 +4,7 @@
 
 # Class: MessageError
 
-Defined in: [src/errors.ts:58](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L58)
+Defined in: [src/errors.ts:58](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L58)
 
 Thrown when a message fails to parse or validate.
 
@@ -18,7 +18,7 @@ Thrown when a message fails to parse or validate.
 
 > **new MessageError**(`message`, `rawMessage?`): `MessageError`
 
-Defined in: [src/errors.ts:59](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L59)
+Defined in: [src/errors.ts:59](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L59)
 
 #### Parameters
 
@@ -41,7 +41,7 @@ Defined in: [src/errors.ts:59](https://github.com/bneb/etherply/blob/303e876d3c2
 
 > `readonly` **code**: `string`
 
-Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L11)
+Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L11)
 
 #### Inherited from
 
@@ -77,7 +77,7 @@ Defined in: node\_modules/typescript/lib/lib.es5.d.ts:1076
 
 > `readonly` `optional` **rawMessage**: `string`
 
-Defined in: [src/errors.ts:61](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L61)
+Defined in: [src/errors.ts:61](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L61)
 
 ***
 

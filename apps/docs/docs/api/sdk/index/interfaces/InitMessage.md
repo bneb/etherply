@@ -4,7 +4,7 @@
 
 # Interface: InitMessage
 
-Defined in: [src/types.ts:119](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/types.ts#L119)
+Defined in: [src/types.ts:119](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/types.ts#L119)
 
 Initial state message received on connection.
 
@@ -14,7 +14,7 @@ Initial state message received on connection.
 
 > **data**: `Record`\<`string`, `unknown`\>
 
-Defined in: [src/types.ts:122](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/types.ts#L122)
+Defined in: [src/types.ts:122](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/types.ts#L122)
 
 Current state of the workspace as key-value pairs
 
@@ -24,4 +24,4 @@ Current state of the workspace as key-value pairs
 
 > **type**: `"init"`
 
-Defined in: [src/types.ts:120](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/types.ts#L120)
+Defined in: [src/types.ts:120](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/types.ts#L120)

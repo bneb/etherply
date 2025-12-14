@@ -1,5 +1,5 @@
-import { E as EtherPlyMessage } from './client-Dg1Ob3EQ.js';
-export { C as ConnectionStatus, a as EtherPlyClient, b as EtherPlyConfig, I as InitMessage, M as MessageHandler, O as Operation, c as OperationMessage, S as StatusHandler } from './client-Dg1Ob3EQ.js';
+import { E as EtherPlyMessage } from './client-CtBTxa2k.js';
+export { C as ConnectionStatus, a as EtherPlyClient, b as EtherPlyConfig, I as InitMessage, M as MessageHandler, O as Operation, c as OperationMessage, S as StatusHandler } from './client-CtBTxa2k.js';
 
 /**
  * Error types for EtherPly SDK.

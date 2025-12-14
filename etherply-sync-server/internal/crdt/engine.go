@@ -25,8 +25,8 @@ import (
 // docKey is the reserved storage key for document blobs.
 const docKey = "sync_doc"
 
-// Operation represents a request to mutate the state.
-// Timestamp is used by LWW strategy for ordering, and by Automerge for commit metadata.
+// Operation represents a verified request to mutate the document state.
+// Timestamp is strictly ordered by the server (Unix Microseconds).
 type Operation struct {
 	WorkspaceID string      `json:"workspace_id"`
 	Key         string      `json:"key"`
@@ -48,10 +48,13 @@ type ReplicationCallback func(workspaceID string, changes []byte) error
 
 // Engine orchestrates document synchronization using a pluggable strategy.
 type Engine struct {
-	store      store.Store
-	strategy   sync.SyncStrategy
-	logger     *slog.Logger
-	mu         gosync.Mutex // Global lock for MVP. Ideally should be per-workspace.
+	store    store.Store
+	strategy sync.SyncStrategy
+	logger   *slog.Logger
+	// mu protects the engine state.
+	// Note: Granular locking per-workspace is planned for future optimization
+	// when contention on the global lock becomes a bottleneck (>100k OPS).
+	mu         gosync.Mutex
 	replicator replication.Replicator
 	region     string
 	serverID   string
@@ -143,8 +146,11 @@ func (e *Engine) ProcessOperation(op Operation) error {
 	start := time.Now()
 
 	// Strict Validation
-	if op.WorkspaceID == "" || op.Key == "" {
-		return fmt.Errorf("invalid operation: workspace_id and key are required")
+	if op.WorkspaceID == "" {
+		return fmt.Errorf("invalid operation: workspace_id is missing")
+	}
+	if op.Key == "" {
+		return fmt.Errorf("invalid operation: key is missing")
 	}
 
 	e.mu.Lock()

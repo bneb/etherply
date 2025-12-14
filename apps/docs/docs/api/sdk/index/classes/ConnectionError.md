@@ -4,7 +4,7 @@
 
 # Class: ConnectionError
 
-Defined in: [src/errors.ts:34](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L34)
+Defined in: [src/errors.ts:34](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L34)
 
 Thrown when connection fails or times out.
 
@@ -18,7 +18,7 @@ Thrown when connection fails or times out.
 
 > **new ConnectionError**(`message`, `cause?`, `isRetryable?`): `ConnectionError`
 
-Defined in: [src/errors.ts:35](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L35)
+Defined in: [src/errors.ts:35](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L35)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: [src/errors.ts:35](https://github.com/bneb/etherply/blob/303e876d3c2
 
 > `readonly` `optional` **cause**: `Error`
 
-Defined in: [src/errors.ts:37](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L37)
+Defined in: [src/errors.ts:37](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L37)
 
 ***
 
@@ -50,7 +50,7 @@ Defined in: [src/errors.ts:37](https://github.com/bneb/etherply/blob/303e876d3c2
 
 > `readonly` **code**: `string`
 
-Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L11)
+Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L11)
 
 #### Inherited from
 
@@ -62,7 +62,7 @@ Defined in: [src/errors.ts:11](https://github.com/bneb/etherply/blob/303e876d3c2
 
 > `readonly` **isRetryable**: `boolean` = `true`
 
-Defined in: [src/errors.ts:38](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/errors.ts#L38)
+Defined in: [src/errors.ts:38](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/errors.ts#L38)
 
 ***
 

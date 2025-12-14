@@ -2,15 +2,17 @@ package main
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/bneb/etherply/etherply-sync-server/internal/auth"
 	"github.com/bneb/etherply/etherply-sync-server/internal/config"
 	"github.com/bneb/etherply/etherply-sync-server/internal/crdt"
+	"github.com/bneb/etherply/etherply-sync-server/internal/middleware"
 	"github.com/bneb/etherply/etherply-sync-server/internal/presence"
 	"github.com/bneb/etherply/etherply-sync-server/internal/pubsub"
 	"github.com/bneb/etherply/etherply-sync-server/internal/replication"
@@ -43,16 +45,18 @@ import (
 //   - LOG_FORMAT: json (default), text
 //   - LOG_LEVEL: debug, info, warn, error
 func main() {
+	// Initialize structured logger immediately
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, nil))
+	slog.SetDefault(logger)
+
 	// Load configuration from environment
 	cfg := config.Load()
 
 	// Validate required configuration
 	if err := cfg.Validate(); err != nil {
-		log.Fatalf("[CRITICAL] Configuration error: %v", err)
+		logger.Error("configuration_error", slog.Any("error", err))
+		os.Exit(1)
 	}
-
-	// Initialize logger
-	logger := cfg.NewLogger()
 
 	// Initialize authentication
 	auth.Init(cfg.JWTSecret)
@@ -62,7 +66,8 @@ func main() {
 	// Ephemeral storage will lead to dataloss on pod restart.
 	stateStore, err := store.NewBadgerStore(cfg.BadgerPath)
 	if err != nil {
-		log.Fatalf("Failed to initialize persistence layer at %s: %v", cfg.BadgerPath, err)
+		logger.Error("persistence_init_failed", "path", cfg.BadgerPath, "error", err)
+		os.Exit(1)
 	}
 	defer stateStore.Close()
 	logger.Info("persistence_initialized", "path", cfg.BadgerPath)
@@ -86,7 +91,8 @@ func main() {
 			NATSURLs: cfg.NATSURLs,
 		})
 		if err != nil {
-			log.Fatalf("Failed to initialize NATS replicator: %v", err)
+			logger.Error("nats_replicator_failed", "error", err)
+			os.Exit(1)
 		}
 		defer replicator.Close()
 
@@ -97,7 +103,8 @@ func main() {
 		if err := replicator.Subscribe(func(event replication.ChangeEvent) error {
 			return crdtEngine.ApplyRemoteChanges(event.WorkspaceID, event.Changes)
 		}); err != nil {
-			log.Fatalf("Failed to subscribe to replication events: %v", err)
+			logger.Error("replication_subscription_failed", "error", err)
+			os.Exit(1)
 		}
 
 		logger.Info("replication_enabled", "region", cfg.Region, "server_id", cfg.ServerID)
@@ -129,13 +136,14 @@ func main() {
 	// Metrics Endpoint (P0 Enterprise Feature)
 	mux.Handle("/metrics", promhttp.Handler())
 
-	// Apply Middleware
-	handler := auth.Middleware(mux)
+	// Apply Middleware: RateLimiter -> Auth
+	// Order matters: Rate limit before expensive auth/logic.
+	finalHandler := middleware.RateLimit(auth.Middleware(mux))
 
 	// Create HTTP server
 	httpServer := &http.Server{
 		Addr:    ":" + cfg.Port,
-		Handler: handler,
+		Handler: finalHandler,
 	}
 
 	// Channel for server errors
@@ -159,12 +167,13 @@ func main() {
 	select {
 	case err := <-serverErrors:
 		if err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Server error: %v", err)
+			logger.Error("server_failed", "error", err)
+			os.Exit(1)
 		}
 	case sig := <-shutdown:
 		logger.Info("shutdown_initiated", "signal", sig.String())
 
-		ctx, cancel := context.WithTimeout(context.Background(), cfg.ShutdownTimeout)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // Hardcoded timeout or config
 		defer cancel()
 
 		if err := httpServer.Shutdown(ctx); err != nil {

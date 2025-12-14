@@ -4,7 +4,7 @@
 
 # Interface: OperationMessage
 
-Defined in: [src/types.ts:128](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/types.ts#L128)
+Defined in: [src/types.ts:128](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/types.ts#L128)
 
 Operation message for state updates.
 
@@ -14,7 +14,7 @@ Operation message for state updates.
 
 > **payload**: [`Operation`](Operation.md)
 
-Defined in: [src/types.ts:130](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/types.ts#L130)
+Defined in: [src/types.ts:130](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/types.ts#L130)
 
 ***
 
@@ -22,4 +22,4 @@ Defined in: [src/types.ts:130](https://github.com/bneb/etherply/blob/303e876d3c2
 
 > **type**: `"op"`
 
-Defined in: [src/types.ts:129](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/types.ts#L129)
+Defined in: [src/types.ts:129](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/types.ts#L129)

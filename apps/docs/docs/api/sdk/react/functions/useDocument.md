@@ -4,9 +4,9 @@
 
 # Function: useDocument()
 
-> **useDocument**\<`T`\>(`options`): `UseDocumentReturn`\<`T`\>
+> **useDocument**\<`T`\>(`options`): [`UseDocumentReturn`](../interfaces/UseDocumentReturn.md)\<`T`\>
 
-Defined in: [src/react/useDocument.tsx:98](https://github.com/bneb/etherply/blob/303e876d3c20fd29bbe2577e2c1219ab266cb9d9/packages/sdk-js/src/react/useDocument.tsx#L98)
+Defined in: [src/react/useDocument.tsx:98](https://github.com/bneb/etherply/blob/cacd548d9b6df1697db3259d47218d0d3be5e820/packages/sdk-js/src/react/useDocument.tsx#L98)
 
 Hook to sync a single key with EtherPly.
 
@@ -23,11 +23,11 @@ Must be used within an EtherPlyProvider.
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| `options` | `UseDocumentOptions`\<`T`\> | Configuration options |
+| `options` | [`UseDocumentOptions`](../interfaces/UseDocumentOptions.md)\<`T`\> | Configuration options |
 
 ## Returns
 
-`UseDocumentReturn`\<`T`\>
+[`UseDocumentReturn`](../interfaces/UseDocumentReturn.md)\<`T`\>
 
 Object with value, setter, and loading state
 
