@@ -43,7 +43,7 @@ export default function LoginPage() {
                 <CardHeader className="text-center pb-8">
                     <div className="mx-auto mb-6 bg-blue-600/10 p-3 rounded-xl ring-1 ring-blue-500/20 w-fit cursor-pointer hover:bg-blue-600/20 transition-colors">
                         <Link href="/">
-                            <Image src="/logo.svg" alt="EtherPly Logo" width={24} height={24} className="h-6 w-6" />
+                            <Image src="/logo.svg" alt="nMeshed Logo" width={24} height={24} className="h-6 w-6" />
                         </Link>
                     </div>
                     <CardTitle className="text-2xl font-bold tracking-tight text-white">Welcome Back</CardTitle>
@@ -54,7 +54,7 @@ export default function LoginPage() {
                         <div className="space-y-2">
                             <Input
                                 type="email"
-                                placeholder="developer@etherply.com"
+                                placeholder="developer@nmeshed.com"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}

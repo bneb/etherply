@@ -6,7 +6,7 @@ You are here because you need to synchronize **complex state**.
 The web we grew up with was a library—static pages, cached assets, solitary experiences.
 We are building the **Living Web**. Where cursors dance, text flows between screens, and state is a shared hallucination.
 
-EtherPly is **Postgres for Realtime**. It is not just a WebSocket wrapper; it is an opinionated, conflict-free sync engine designed for heavy-duty applications like Kanban boards, Design tools, and IDEs.
+nMeshed is **Postgres for Realtime**. It is not just a WebSocket wrapper; it is an opinionated, conflict-free sync engine designed for heavy-duty applications like Kanban boards, Design tools, and IDEs.
 
 ## The Ritual (Installation)
 
@@ -14,7 +14,7 @@ EtherPly is **Postgres for Realtime**. It is not just a WebSocket wrapper; it is
 We believe in "Zero Friction." You should be multiplayer in the time it takes to brew a pour-over.
 
 ```bash
-npm install @etherply/sdk @etherply/react-components
+npm install nmeshed
 ```
 
 ## The Invocation (Usage)
@@ -23,21 +23,21 @@ Do not manage WebSocket connections. Do not parse JSON. Do not handle reconnecti
 Simply **declare** your intent.
 
 ### 1. The Provider
-Wrap your application in the ether.
+Wrap your application in the mesh.
 
 ```tsx
-import { EtherPlyProvider } from '@etherply/sdk/react';
+import { NMeshedProvider } from 'nmeshed/react';
 
-<EtherPlyProvider config={{ workspaceId: 'room-1', token: 'dev' }}>
+<NMeshedProvider config={{ workspaceId: 'room-1', token: 'dev' }}>
   <App />
-</EtherPlyProvider>
+</NMeshedProvider>
 ```
 
 ### 2. The Magic
 Drop in our pre-fabricated "Magic Components" to instantly enliven the space.
 
 ```tsx
-import { LiveCursors } from '@etherply/react-components';
+import { LiveCursors } from 'nmeshed/react';
 
 export default function Canvas() {
   return (
@@ -53,7 +53,7 @@ export default function Canvas() {
 Synchronize data as easily as `useState`.
 
 ```tsx
-import { useDocument } from '@etherply/sdk/react';
+import { useDocument } from 'nmeshed/react';
 
 const { value, setValue } = useDocument({ key: 'manifesto', initialValue: '' });
 ```

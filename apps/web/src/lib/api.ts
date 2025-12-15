@@ -37,7 +37,7 @@ export const api = {
     async fetchWithAuth<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
         let token: string | null = null;
         if (typeof window !== 'undefined') {
-            token = localStorage.getItem('etherply_token');
+            token = localStorage.getItem('nmeshed_token');
         }
 
         const headers: HeadersInit = {
@@ -94,8 +94,8 @@ export const api = {
 
             // Persist token (MVP Velocity Decision)
             if (typeof window !== 'undefined') {
-                localStorage.setItem('etherply_token', data.token);
-                localStorage.setItem('etherply_user', JSON.stringify(data.user));
+                localStorage.setItem('nmeshed_token', data.token);
+                localStorage.setItem('nmeshed_user', JSON.stringify(data.user));
             }
 
             return data;
@@ -123,14 +123,14 @@ export const api = {
 
     logout() {
         if (typeof window !== 'undefined') {
-            localStorage.removeItem('etherply_token');
-            localStorage.removeItem('etherply_user');
+            localStorage.removeItem('nmeshed_token');
+            localStorage.removeItem('nmeshed_user');
         }
     },
 
     getUser(): User | null {
         if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem('etherply_user');
+            const stored = localStorage.getItem('nmeshed_user');
             if (stored) {
                 try {
                     return JSON.parse(stored);

@@ -27,9 +27,9 @@ export default function DashboardLayout({
                 <div className="p-8">
                     <div className="flex items-center gap-3 mb-10">
                         <div className="flex items-center justify-center">
-                            <Image src="/logo.svg" alt="EtherPly Logo" width={24} height={24} className="h-6 w-6" />
+                            <Image src="/logo.svg" alt="nMeshed Logo" width={24} height={24} className="h-6 w-6" />
                         </div>
-                        <span className="font-bold text-lg tracking-tight text-white">EtherPly</span>
+                        <span className="font-bold text-lg tracking-tight text-white">nMeshed</span>
                     </div>
 
                     <nav className="space-y-1">
@@ -69,9 +69,9 @@ export default function DashboardLayout({
                 <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-black/50 backdrop-blur-md sticky top-0 z-40 md:hidden">
                     <div className="flex items-center gap-2">
                         <div className="flex items-center justify-center">
-                            <Image src="/logo.svg" alt="EtherPly Logo" width={24} height={24} className="h-6 w-6" />
+                            <Image src="/logo.svg" alt="nMeshed Logo" width={24} height={24} className="h-6 w-6" />
                         </div>
-                        <span className="font-bold text-white">EtherPly</span>
+                        <span className="font-bold text-white">nMeshed</span>
                     </div>
                 </header>
                 <div className="p-8 max-w-7xl mx-auto animate-in fade-in duration-500">

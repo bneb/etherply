@@ -1,15 +1,15 @@
 # Troubleshooting Guide
 
-Common issues and solutions when working with EtherPly.
+Common issues and solutions when working with nMeshed.
 
 ## Connection Issues
 
 ### "Connection Refused"
 **Symptoms**: The client fails to connect, and the console shows `WebSocket connection to 'ws://...' failed`.
-**Cause**: The EtherPly sync server is not running or is not reachable at the configured host.
+**Cause**: The nMeshed sync server is not running or is not reachable at the configured host.
 **Solution**:
 - Ensure the backend is running (`go run cmd/server/main.go`).
-- Check the `host` configuration in `EtherPlyProvider`.
+- Check the `host` configuration in `NMeshedProvider`.
 - Verify firewall settings.
 
 ### "Authentication Failed"
@@ -26,7 +26,7 @@ Common issues and solutions when working with EtherPly.
 **Cause**:
 - Clients might be connected to different `workspaceId`s.
 - `client.set()` calls might be failing (check console for errors).
-- React components might not be subscribing correctly (ensure you use `useDocument` or `useEtherPly` hooks).
+- React components might not be subscribing correctly (ensure you use `useDocument` or `useNMeshed` hooks).
 
 ### "Duplicate Key" or State Conflicts
 **Symptoms**: Data flickers or reverts to old values.
@@ -37,9 +37,9 @@ Common issues and solutions when working with EtherPly.
 
 ## Python SDK
 
-### "Module not found: etherply"
-**Symptoms**: `ImportError: No module named 'etherply'`
-**Solution**: Ensure you have installed the package: `pip install etherply` or `pip install -e packages/sdk-python` for local dev.
+### "Module not found: nmeshed"
+**Symptoms**: `ImportError: No module named 'nmeshed'`
+**Solution**: Ensure you have installed the package: `pip install nmeshed` or `pip install -e packages/sdk-python` for local dev.
 
 ### "AsyncIO Event Loop Closed"
 **Symptoms**: Runtime errors about closed event loops.

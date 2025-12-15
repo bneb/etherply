@@ -1,7 +1,7 @@
 {
-    "name": "@etherply/sdk",
-    "version": "0.1.0",
-    "description": "Official JavaScript/TypeScript SDK for EtherPly - Real-time sync infrastructure",
+    "name": "nmeshed",
+    "version": "0.1.1",
+    "description": "nMeshed - Real-time sync infrastructure for multiplayer apps. Mesh n users together.",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "types": "dist/index.d.ts",
@@ -32,23 +32,25 @@
         "prepublishOnly": "npm run build"
     },
     "keywords": [
-        "etherply",
+        "nmeshed",
         "realtime",
         "sync",
         "crdt",
         "collaborative",
         "multiplayer",
         "websocket",
-        "react"
+        "react",
+        "game",
+        "state-sync"
     ],
-    "author": "EtherPly Team",
+    "author": "nMeshed",
     "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/bneb/etherply.git",
         "directory": "packages/sdk-js"
     },
-    "homepage": "https://etherply.com",
+    "homepage": "https://nmeshed.com",
     "bugs": {
         "url": "https://github.com/bneb/etherply/issues"
     },

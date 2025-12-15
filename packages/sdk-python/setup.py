@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="etherply",
+    name="nmeshed",
     version="0.1.0",
-    description="EtherPly Python SDK for real-time synchronization",
-    author="EtherPly",
+    description="nMeshed Python SDK for real-time synchronization",
+    author="nMeshed",
     packages=find_packages(),
     install_requires=[
         "websockets>=10.0",

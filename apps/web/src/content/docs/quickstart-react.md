@@ -1,19 +1,19 @@
 # React Quickstart
 
-Get started with EtherPly in 5 minutes using our React hooks.
+Get started with nMeshed in 5 minutes using our React hooks.
 
 ## 1. Install
 
 ```bash
-npm install @etherply/sdk
+npm install nmeshed
 ```
 
 ## 2. Setup Provider
 
-Wrap your application with `EtherPlyProvider` to initialize the client.
+Wrap your application with `NMeshedProvider` to initialize the client.
 
 ```tsx title="src/App.tsx"
-import { EtherPlyProvider } from '@etherply/sdk/react';
+import { NMeshedProvider } from 'nmeshed/react';
 
 const config = {
   workspaceId: 'my-first-app',
@@ -22,9 +22,9 @@ const config = {
 
 export default function App() {
   return (
-    <EtherPlyProvider config={config}>
+    <NMeshedProvider config={config}>
       <CollaborativeEditor />
-    </EtherPlyProvider>
+    </NMeshedProvider>
   );
 }
 ```
@@ -34,7 +34,7 @@ export default function App() {
 Use `useDocument` to sync state across clients.
 
 ```tsx title="src/CollaborativeEditor.tsx"
-import { useDocument } from '@etherply/sdk/react';
+import { useDocument } from 'nmeshed/react';
 
 export function CollaborativeEditor() {
   // Syncs 'content' key in real-time
@@ -60,7 +60,7 @@ export function CollaborativeEditor() {
 Show who else is online with `usePresence`.
 
 ```tsx title="src/PresenceBar.tsx"
-import { usePresence } from '@etherply/sdk/react';
+import { usePresence } from 'nmeshed/react';
 
 export function PresenceBar() {
   const users = usePresence();

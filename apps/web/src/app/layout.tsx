@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "EtherPly - Postgres for Realtime",
+  title: "nMeshed - Postgres for Realtime",
   description: "The sync engine for professional SaaS applications.",
 };
 

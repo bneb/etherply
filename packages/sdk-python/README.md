@@ -1,10 +1,10 @@
-# @etherply/sdk-python
+# nmeshed (Python)
 
-The official Python SDK for [EtherPly](https://etherply.com). Designed for backend services, bots, and IoT devices.
+The official Python SDK for [nMeshed](https://nmeshed.com). Designed for backend services, bots, and IoT devices.
 
-![PyPI](https://img.shields.io/pypi/v/etherply)
-![Python Version](https://img.shields.io/pypi/pyversions/etherply)
-![License](https://img.shields.io/pypi/l/etherply)
+![PyPI](https://img.shields.io/pypi/v/nmeshed)
+![Python Version](https://img.shields.io/pypi/pyversions/nmeshed)
+![License](https://img.shields.io/pypi/l/nmeshed)
 
 ## Features
 
@@ -16,7 +16,7 @@ The official Python SDK for [EtherPly](https://etherply.com). Designed for backe
 ## Installation
 
 ```bash
-pip install etherply
+pip install nmeshed
 ```
 
 ## Quick Start
@@ -25,11 +25,11 @@ pip install etherply
 
 ```python
 import asyncio
-from etherply import EtherPlyClient
+from nmeshed import NMeshedClient
 
 async def main():
     # 1. Initialize
-    client = EtherPlyClient(
+    client = NMeshedClient(
         workspace_id="my-workspace",
         token="dev-token",
         host="localhost:8080",

@@ -11,7 +11,7 @@ export default function DocsIndex() {
                 </span> in &lt;50ms.
             </h1>
             <p className="text-xl text-zinc-400 max-w-2xl mb-12">
-                EtherPly is the open-source sync engine for modern applications.
+                nMeshed is the open-source sync engine for modern applications.
                 Stop building WebSockets from scratch.
             </p>
 
@@ -71,7 +71,7 @@ export default function DocsIndex() {
                         Installation
                     </div>
                     <div className="p-6 font-mono text-zinc-200 flex items-center justify-between">
-                        <span>npm install @etherply/sdk</span>
+                        <span>npm install nmeshed</span>
                         <button className="text-zinc-500 hover:text-white transition-colors" title="Copy">
                             Click to copy
                         </button>

@@ -1,7 +1,7 @@
-# EtherPly
+# nMeshed
 > "Postgres for Realtime."
 
-EtherPly is a **contract-grade** state synchronization engine. It turns static apps into collaborative platforms without compromising on data integrity. Unlike other "magic" solutions that lose data in edge cases, EtherPly relies on **ACID-compliant on-disk persistence (BadgerDB)** and mathematically correct CRDT merging. Don't lose your users' data in the WebSocket void.
+nMeshed is a **contract-grade** state synchronization engine. It turns static apps into collaborative platforms without compromising on data integrity. Unlike other "magic" solutions that lose data in edge cases, nMeshed relies on **ACID-compliant on-disk persistence (BadgerDB)** and mathematically correct CRDT merging. Don't lose your users' data in the WebSocket void.
 
 ## 📜 Governance & Standards (The "Constitution")
 We operate as a high-discipline engineering team. Read the protocols before contributing.
@@ -18,7 +18,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the "Smart Nation" standard.
 | Directory | Component | Description |
 |---|---|---|
 | [`etherply-sync-server/`](./etherply-sync-server) | **Core Engine** | Go-based WebSocket server with CRDT logic and Disk persistence. |
-| [`packages/sdk-js/`](./packages/sdk-js) | **JS SDK** | Client library for React/Node.js. |
+| [`packages/sdk-js/`](./packages/sdk-js) | **JS SDK** | Client library for React/Node.js. `npm install nmeshed` |
 | [`packages/sdk-python/`](./packages/sdk-python) | **Python SDK** | Client library for Backend bots & IoT. |
 | [`apps/docs/`](./apps/docs) | **Documentation** | Documentation site (Docusaurus). |
 
@@ -44,7 +44,7 @@ cd etherply-sync-server
 go mod tidy
 go run main.go
 ```
-*Expected Output*: `EtherPly Sync Server starting on port 8080`
+*Expected Output*: `nMeshed Sync Server starting on port 8080`
 
 ### 2. Start the Frontend (Text Editor)
 In a new terminal:
@@ -68,7 +68,7 @@ kill -9 <PID>
 
 ### "Connection Refused"
 **Symptom**: Frontend console shows WebSocket errors.
-**Cause**: Backyard server is not running or crashed.
+**Cause**: Backend server is not running or crashed.
 **Fix**: Ensure `go run main.go` is active in the backend terminal.
 
 ## Documentation Index

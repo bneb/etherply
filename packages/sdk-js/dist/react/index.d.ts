@@ -276,4 +276,4 @@ declare function EtherPlyProvider({ config, children, autoConnect, }: EtherPlyPr
  */
 declare function useEtherPlyContext(): EtherPlyClient;
 
-export { EtherPlyProvider, type UseEtherPlyOptions, type UseEtherPlyReturn, useDocument, useEtherPly, useEtherPlyContext, usePresence };
+export { EtherPlyProvider, type EtherPlyProviderProps, type PresenceUser, type UseDocumentOptions, type UseDocumentReturn, type UseEtherPlyOptions, type UseEtherPlyReturn, type UsePresenceOptions, useDocument, useEtherPly, useEtherPlyContext, usePresence };

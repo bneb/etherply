@@ -74,10 +74,10 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <div className="mb-6 flex justify-center">
             <div className="p-2 bg-white/5 rounded-lg">
-              <Image src="/logo.svg" alt="EtherPly Logo" width={24} height={24} className="h-6 w-6" />
+              <Image src="/logo.svg" alt="nMeshed Logo" width={24} height={24} className="h-6 w-6" />
             </div>
           </div>
-          <p className="text-zinc-600 text-sm">© 2025 EtherPly Inc. Built for the builders.</p>
+          <p className="text-zinc-600 text-sm">© 2025 nMeshed. Built for the builders.</p>
         </div>
       </footer>
     </main>

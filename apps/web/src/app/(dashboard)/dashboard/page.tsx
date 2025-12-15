@@ -113,7 +113,7 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <Wifi className="h-3 w-3" />
-                                        ws://api.etherply.io
+                                        ws://api.nmeshed.com
                                     </div>
                                 </div>
                             </CardFooter>

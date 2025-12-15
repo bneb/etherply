@@ -11,12 +11,12 @@ import TabItem from '@theme/TabItem';
 <Tabs>
   <TabItem value="js" label="Node.js / React" default>
     ```bash
-    npm install @etherply/sdk
+    npm install nmeshed
     ```
   </TabItem>
   <TabItem value="python" label="Python">
     ```bash
-    pip install etherply
+    pip install nmeshed
     ```
   </TabItem>
   <TabItem value="go" label="Go">
@@ -33,9 +33,9 @@ Configure your connection. The `token` is your passport; the `workspaceId` is yo
 <Tabs>
   <TabItem value="js" label="JavaScript / TS" default>
     ```typescript
-    import { EtherPlyClient } from '@etherply/sdk';
+    import { NMeshedClient } from 'nmeshed';
 
-    const client = new EtherPlyClient({
+    const client = new NMeshedClient({
       workspaceId: 'my-room',
       token: 'sk_live_...', // Your secret token
     });
@@ -45,10 +45,10 @@ Configure your connection. The `token` is your passport; the `workspaceId` is yo
   </TabItem>
   <TabItem value="react" label="React Hook">
     ```tsx
-    import { useEtherPly } from '@etherply/sdk/react';
+    import { useNMeshed } from 'nmeshed/react';
 
     function App() {
-      const { status } = useEtherPly({
+      const { status } = useNMeshed({
         workspaceId: 'my-room',
         token: 'sk_live_...'
       });
@@ -59,9 +59,9 @@ Configure your connection. The `token` is your passport; the `workspaceId` is yo
   </TabItem>
   <TabItem value="python" label="Python">
     ```python
-    from etherply import EtherPlyClient
+    from nmeshed import NMeshedClient
 
-    client = EtherPlyClient(
+    client = NMeshedClient(
         workspace_id="my-room",
         token="sk_live_..."
     )
@@ -111,6 +111,6 @@ When you set `key=value`, it propagates to every connected peer in milliseconds.
 
 ## Next Steps
 
-You are now connected to the EtherPly mesh.
+You are now connected to the nMeshed mesh.
 - **[Build a Text Editor](/docs/examples/text-editor)**: The "Hello World" of multiplayer.
 - **[Add Live Cursors](/docs/examples/cursors)**: Add presence in 30 seconds.

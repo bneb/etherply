@@ -9,10 +9,10 @@ export function Navbar() {
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2">
                     <div className="flex items-center justify-center">
-                        <Image src="/logo.svg" alt="EtherPly Logo" width={24} height={24} className="h-6 w-6" />
+                        <Image src="/logo.svg" alt="nMeshed Logo" width={24} height={24} className="h-6 w-6" />
                     </div>
                     <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
-                        EtherPly
+                        nMeshed
                     </span>
                 </Link>
 
